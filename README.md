@@ -52,7 +52,7 @@ DB_ENGINE=InnoDB
 php flarum migrate
 ```
 
-### 4. Запуск
+### 4. Запустити
 
 ```php
 php -d display_errors=0 -S localhost:8000 -t ./public
