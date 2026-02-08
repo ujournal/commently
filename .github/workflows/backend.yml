@@ -30,10 +30,23 @@ jobs:
           extensions: curl, dom, gd, json, mbstring, openssl, pdo_mysql, tokenizer, zip
           tools: phpunit, composer:v2
 
+      - name: Wait for MariaDB
+        run: |
+          for i in $(seq 1 30); do
+            php -r "
+              try { new PDO('mysql:host=127.0.0.1;port=3306', 'root', 'root'); exit(0); } catch (Exception \$e) { exit(1); }
+            " 2>/dev/null && break
+            sleep 2
+          done
+
       - name: Create MySQL database
         run: |
-          mysql -h 127.0.0.1 -P 3306 -uroot -proot -e "CREATE DATABASE IF NOT EXISTS flarum_test;"
-          mysql -h 127.0.0.1 -P 3306 -uroot -proot -e "ALTER USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY 'root'; FLUSH PRIVILEGES;"
+          php -r "
+            \$pdo = new PDO('mysql:host=127.0.0.1;port=3306', 'root', 'root');
+            \$pdo->exec('CREATE DATABASE IF NOT EXISTS flarum_test');
+            \$pdo->exec(\"ALTER USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY 'root'\");
+            \$pdo->exec('FLUSH PRIVILEGES');
+          "
 
       - name: Install dependencies
         run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
