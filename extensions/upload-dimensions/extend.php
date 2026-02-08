@@ -1,6 +1,6 @@
 <?php
 
-namespace Acme\UploadDimensions;
+namespace UJournal\UploadDimensions;
 
 use Flarum\Api\Controller\ListDiscussionsController;
 use Flarum\Extend;

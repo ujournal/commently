@@ -1,22 +1,21 @@
 {
-    "name": "ujournal/upload-dimensions",
-    "description": "Adds width and height to FoF Upload files",
+    "name": "ujournal/sort-by-likes",
+    "description": "Allow sorting discussions by total post likes (API only)",
     "type": "flarum-extension",
     "version": "1.0.0",
     "license": "MIT",
     "require": {
         "flarum/core": "^1.8",
-        "fof/upload": "*",
-        "intervention/image": "^2.5"
+        "flarum/likes": "*"
     },
     "autoload": {
         "psr-4": {
-            "UJournal\\UploadDimensions\\": "src/"
+            "UJournal\\SortByLikes\\": "src/"
         }
     },
     "extra": {
         "flarum-extension": {
-            "title": "Upload Dimensions",
+            "title": "Sort by Likes",
             "category": "feature"
         }
     }

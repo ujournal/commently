@@ -4,41 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "18bf652bf2895e898452ddd27fc6e3ef",
+    "content-hash": "f70a7fd784ee287c20a091d355dbef39",
     "packages": [
-        {
-            "name": "acme/upload-dimensions",
-            "version": "1.0.0",
-            "dist": {
-                "type": "path",
-                "url": "extensions/upload-dimensions",
-                "reference": "8e39fec29cca4b3c0c343d8803e2126c9df0edda"
-            },
-            "require": {
-                "flarum/core": "^1.8",
-                "fof/upload": "*",
-                "intervention/image": "^2.5"
-            },
-            "type": "flarum-extension",
-            "extra": {
-                "flarum-extension": {
-                    "title": "Upload Dimensions",
-                    "category": "feature"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Acme\\UploadDimensions\\": "src/"
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "description": "Adds width and height to FoF Upload files",
-            "transport-options": {
-                "relative": true
-            }
-        },
         {
             "name": "aws/aws-crt-php",
             "version": "v1.2.7",
@@ -9967,6 +9934,71 @@
                 "source": "https://github.com/tijsverkoyen/CssToInlineStyles/tree/v2.4.0"
             },
             "time": "2025-12-02T11:56:42+00:00"
+        },
+        {
+            "name": "ujournal/sort-by-likes",
+            "version": "1.0.0",
+            "dist": {
+                "type": "path",
+                "url": "extensions/sort-by-likes",
+                "reference": "300bd620a3181f76767df7db922312cff5828e0e"
+            },
+            "require": {
+                "flarum/core": "^1.8",
+                "flarum/likes": "*"
+            },
+            "type": "flarum-extension",
+            "extra": {
+                "flarum-extension": {
+                    "title": "Sort by Likes",
+                    "category": "feature"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "UJournal\\SortByLikes\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Allow sorting discussions by total post likes (API only)",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "ujournal/upload-dimensions",
+            "version": "1.0.0",
+            "dist": {
+                "type": "path",
+                "url": "extensions/upload-dimensions",
+                "reference": "b7ac2127eff86b4e27d4cb92f4a5a0a16b032cc5"
+            },
+            "require": {
+                "flarum/core": "^1.8",
+                "fof/upload": "*",
+                "intervention/image": "^2.5"
+            },
+            "type": "flarum-extension",
+            "extra": {
+                "flarum-extension": {
+                    "title": "Upload Dimensions",
+                    "category": "feature"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "UJournal\\UploadDimensions\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Adds width and height to FoF Upload files",
+            "transport-options": {
+                "relative": true
+            }
         },
         {
             "name": "vlucas/phpdotenv",

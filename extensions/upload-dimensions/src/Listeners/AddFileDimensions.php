@@ -1,6 +1,6 @@
 <?php
 
-namespace Acme\UploadDimensions\Listeners;
+namespace UJournal\UploadDimensions\Listeners;
 
 use FoF\Upload\Events\File\WillBeUploaded;
 use Intervention\Image\ImageManager;
