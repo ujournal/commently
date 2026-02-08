@@ -1,6 +1,6 @@
 <?php
 
-namespace UJournal\SortByLikes;
+namespace Commently\SortByLikes;
 
 use Flarum\Api\Controller\ListDiscussionsController;
 use Flarum\Api\Serializer\DiscussionSerializer;
@@ -12,9 +12,9 @@ use Flarum\Likes\Event\PostWasUnliked;
 use Flarum\Post\CommentPost;
 use Flarum\Post\Event\Deleting;
 use Flarum\Post\Post;
-use UJournal\SortByLikes\Access\AllowGlobalLikePostPolicy;
-use UJournal\SortByLikes\Access\AllowGlobalLikePostsPolicy;
-use UJournal\SortByLikes\Filter\ApplyHotSortMutator;
+use Commently\SortByLikes\Access\AllowGlobalLikePostPolicy;
+use Commently\SortByLikes\Access\AllowGlobalLikePostsPolicy;
+use Commently\SortByLikes\Filter\ApplyHotSortMutator;
 
 return [
     (new Extend\Policy())

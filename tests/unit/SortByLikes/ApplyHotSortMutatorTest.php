@@ -8,7 +8,7 @@ use Flarum\User\User;
 use Illuminate\Database\Query\Builder;
 use Mockery;
 use PHPUnit\Framework\TestCase;
-use UJournal\SortByLikes\Filter\ApplyHotSortMutator;
+use Commently\SortByLikes\Filter\ApplyHotSortMutator;
 
 class ApplyHotSortMutatorTest extends TestCase
 {

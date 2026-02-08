@@ -1,6 +1,6 @@
 <?php
 
-namespace UJournal\SortByLikes\Access;
+namespace Commently\SortByLikes\Access;
 
 use Flarum\Discussion\Discussion;
 use Flarum\User\Access\AbstractPolicy;

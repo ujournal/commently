@@ -1,6 +1,6 @@
 <?php
 
-namespace UJournal\UploadDimensions\Listeners;
+namespace Commently\UploadDimensions\Listeners;
 
 use FoF\Upload\Events\File\WillBeUploaded;
 use Intervention\Image\ImageManager;

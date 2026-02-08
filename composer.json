@@ -1,67 +1,94 @@
 {
-    "name": "ujournal/commently",
-    "description": "Commently is modification of Flarum forum software.",
-    "type": "project",
-    "keywords": ["forum", "discussion"],
-    "homepage": "https://github.com/ujournal/commently",
-    "license": "MIT",
-    "authors": [{"name": "UJournal", "email": "info@ujournal.com", "homepage": "https://ujournal.com.ua"}],
-    "support": {"issues": "https://github.com/ujournal/commently/issues", "source": "https://github.com/ujournal/commently", "docs": "https://github.com/ujournal/commently"},
-    "repositories": [{"type": "path", "url": "extensions/upload-dimensions"}, {"type": "path", "url": "extensions/sort-by-likes"}],
-    "require": {
-        "ujournal/upload-dimensions": "^1.0",
-        "ujournal/sort-by-likes": "^1.0",
-        "blomstra/s3-assets": "*",
-        "flarum/approval": "*",
-        "flarum/bbcode": "*",
-        "flarum/core": "^1.8",
-        "flarum/emoji": "*",
-        "flarum/flags": "*",
-        "flarum/lang-english": "*",
-        "flarum/likes": "*",
-        "flarum/lock": "*",
-        "flarum/markdown": "*",
-        "flarum/mentions": "*",
-        "flarum/nicknames": "*",
-        "flarum/pusher": "*",
-        "flarum/statistics": "*",
-        "flarum/sticky": "*",
-        "flarum/subscriptions": "*",
-        "flarum/suspend": "*",
-        "flarum/tags": "*",
-        "fof/upload": "*",
-        "league/flysystem-aws-s3-v3": "^1.0",
-        "vlucas/phpdotenv": "^5.6"
-    },
-    "require-dev": {
-        "flarum/testing": "^1.0"
-    },
-    "scripts": {
-        "test": ["@test:unit", "@test:integration"],
-        "test:unit": "phpunit -c tests/phpunit.unit.xml",
-        "test:integration": "phpunit -c tests/phpunit.integration.xml",
-        "test:setup": "@php tests/integration/setup.php"
-    },
-    "scripts-descriptions": {
-        "test": "Run all tests.",
-        "test:unit": "Run unit tests.",
-        "test:integration": "Run integration tests.",
-        "test:setup": "Set up database for integration tests."
-    },
-    "config": {
-        "preferred-install": "dist",
-        "sort-packages": true,
-        "platform": {
-            "php": "8.0.0"
-        }
-    },
-    "autoload": {
-        "psr-4": {"App\\": "app/"}
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Tests\\Unit\\": "tests/unit/",
-            "Tests\\Integration\\": "tests/integration/"
-        }
+  "name": "ujournal/commently",
+  "description": "Commently is modification of Flarum forum software.",
+  "type": "project",
+  "keywords": [
+    "forum",
+    "discussion"
+  ],
+  "homepage": "https://github.com/ujournal/commently",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Olex Maslov",
+      "email": "jmas.ukraine@gmail.com",
+      "homepage": "https://ujournal.com.ua"
     }
+  ],
+  "support": {
+    "issues": "https://github.com/ujournal/commently/issues",
+    "source": "https://github.com/ujournal/commently",
+    "docs": "https://github.com/ujournal/commently"
+  },
+  "repositories": [
+    {
+      "type": "path",
+      "url": "extensions/upload-dimensions"
+    },
+    {
+      "type": "path",
+      "url": "extensions/sort-by-likes"
+    }
+  ],
+  "require": {
+    "ujournal/upload-dimensions": "^1.0",
+    "ujournal/sort-by-likes": "^1.0",
+    "blomstra/s3-assets": "*",
+    "flarum/approval": "*",
+    "flarum/bbcode": "*",
+    "flarum/core": "^1.8",
+    "flarum/emoji": "*",
+    "flarum/flags": "*",
+    "flarum/lang-english": "*",
+    "flarum/likes": "*",
+    "flarum/lock": "*",
+    "flarum/markdown": "*",
+    "flarum/mentions": "*",
+    "flarum/nicknames": "*",
+    "flarum/pusher": "*",
+    "flarum/statistics": "*",
+    "flarum/sticky": "*",
+    "flarum/subscriptions": "*",
+    "flarum/suspend": "*",
+    "flarum/tags": "*",
+    "fof/upload": "*",
+    "league/flysystem-aws-s3-v3": "^1.0",
+    "vlucas/phpdotenv": "^5.6"
+  },
+  "require-dev": {
+    "flarum/testing": "^1.0"
+  },
+  "scripts": {
+    "test": [
+      "@test:unit",
+      "@test:integration"
+    ],
+    "test:unit": "phpunit -c tests/phpunit.unit.xml",
+    "test:integration": "phpunit -c tests/phpunit.integration.xml",
+    "test:setup": "@php tests/integration/setup.php"
+  },
+  "scripts-descriptions": {
+    "test": "Run all tests.",
+    "test:unit": "Run unit tests.",
+    "test:integration": "Run integration tests.",
+    "test:setup": "Set up database for integration tests."
+  },
+  "config": {
+    "preferred-install": "dist",
+    "sort-packages": true,
+    "platform": {
+      "php": "8.0.0"
+    }
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\": "app/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\Unit\\": "tests/unit/",
+      "Tests\\Integration\\": "tests/integration/"
+    }
+  }
 }

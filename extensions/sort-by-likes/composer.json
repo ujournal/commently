@@ -10,7 +10,7 @@
     },
     "autoload": {
         "psr-4": {
-            "UJournal\\SortByLikes\\": "src/"
+            "Commently\\SortByLikes\\": "src/"
         }
     },
     "extra": {

@@ -9952,7 +9952,7 @@
             },
             "autoload": {
                 "psr-4": {
-                    "UJournal\\SortByLikes\\": "src/"
+                    "Commently\\SortByLikes\\": "src/"
                 }
             },
             "license": [
@@ -9985,7 +9985,7 @@
             },
             "autoload": {
                 "psr-4": {
-                    "UJournal\\UploadDimensions\\": "src/"
+                    "Commently\\UploadDimensions\\": "src/"
                 }
             },
             "license": [

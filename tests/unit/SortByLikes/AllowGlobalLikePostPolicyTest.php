@@ -8,7 +8,7 @@ use Flarum\User\Access\AbstractPolicy;
 use Flarum\User\User;
 use Mockery;
 use PHPUnit\Framework\TestCase;
-use UJournal\SortByLikes\Access\AllowGlobalLikePostPolicy;
+use Commently\SortByLikes\Access\AllowGlobalLikePostPolicy;
 
 class AllowGlobalLikePostPolicyTest extends TestCase
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace UJournal\SortByLikes\Access;
+namespace Commently\SortByLikes\Access;
 
 use Flarum\Group\Group;
 use Flarum\Group\Permission;

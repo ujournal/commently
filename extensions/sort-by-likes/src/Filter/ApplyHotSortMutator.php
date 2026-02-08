@@ -1,6 +1,6 @@
 <?php
 
-namespace UJournal\SortByLikes\Filter;
+namespace Commently\SortByLikes\Filter;
 
 use Flarum\Filter\FilterState;
 use Flarum\Query\QueryCriteria;

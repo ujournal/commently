@@ -7,7 +7,7 @@ use FoF\Upload\Events\File\WillBeUploaded;
 use Mockery;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use UJournal\UploadDimensions\Listeners\AddFileDimensions;
+use Commently\UploadDimensions\Listeners\AddFileDimensions;
 
 class AddFileDimensionsTest extends TestCase
 {

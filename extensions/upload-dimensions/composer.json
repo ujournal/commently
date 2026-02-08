@@ -11,7 +11,7 @@
     },
     "autoload": {
         "psr-4": {
-            "UJournal\\UploadDimensions\\": "src/"
+            "Commently\\UploadDimensions\\": "src/"
         }
     },
     "extra": {

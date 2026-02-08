@@ -1,6 +1,6 @@
 <?php
 
-namespace UJournal\UploadDimensions;
+namespace Commently\UploadDimensions;
 
 use Flarum\Api\Controller\ListDiscussionsController;
 use Flarum\Extend;

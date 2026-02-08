@@ -1,6 +1,6 @@
 <?php
 
-namespace UJournal\SortByLikes\Listeners;
+namespace Commently\SortByLikes\Listeners;
 
 use Flarum\Discussion\Discussion;
 use Flarum\Post\Event\Deleting;
