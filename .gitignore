@@ -1,0 +1,6 @@
+.DS_Store
+storage/
+vendor/
+public/assets/
+.env
+CHANGELOG.md

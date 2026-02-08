@@ -1,0 +1,23 @@
+{
+    "name": "acme/upload-dimensions",
+    "description": "Adds width and height to FoF Upload files",
+    "type": "flarum-extension",
+    "version": "1.0.0",
+    "license": "MIT",
+    "require": {
+        "flarum/core": "^1.8",
+        "fof/upload": "*",
+        "intervention/image": "^2.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Acme\\UploadDimensions\\": "src/"
+        }
+    },
+    "extra": {
+        "flarum-extension": {
+            "title": "Upload Dimensions",
+            "category": "feature"
+        }
+    }
+}
