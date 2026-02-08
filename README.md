@@ -18,14 +18,14 @@ UJournal.
 git clone git@github.com:ujournal/commently.git
 cd ./commently
 composer install
-docker run --name mysql-server-instance \
+docker run --name mysql-commently \
   -p 3307:3306 \
-  -e MYSQL_ROOT_PASSWORD=my-secret-pw \
-  -e MYSQL_DATABASE=my_database \
+  -e MYSQL_ROOT_PASSWORD=commently-pw \
+  -e MYSQL_DATABASE=commently_db \
   -d mysql:8.0
 ```
 
-### 2. Створити `.env`
+### 2. Налаштувати `.env`
 
 ```sh
 cp .env.example .env
@@ -36,9 +36,9 @@ cp .env.example .env
 ```sh
 DB_HOST=127.0.0.1
 DB_PORT=3307
-DB_DATABASE=my_database
+DB_DATABASE=commently_db
 DB_USERNAME=root
-DB_PASSWORD=my-secret-pw
+DB_PASSWORD=commently-pw
 DB_CHARSET=utf8mb4
 DB_COLLATION=utf8mb4_unicode_ci
 DB_PREFIX=
@@ -54,6 +54,6 @@ php flarum migrate
 
 ### 4. Запустити
 
-```php
+```sh
 php -d display_errors=0 -S localhost:8000 -t ./public
 ```
