@@ -62,3 +62,5 @@ jobs:
 
       - name: Run tests
         run: composer test
+        env:
+          FLARUM_TEST_TMP_DIR_LOCAL: tests/integration/tmp
