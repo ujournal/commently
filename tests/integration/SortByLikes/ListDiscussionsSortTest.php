@@ -35,6 +35,7 @@ class ListDiscussionsSortTest extends TestCase
                 [
                     'id' => 1,
                     'title' => 'Discussion with likes',
+                    'slug' => '1-discussion-with-likes',
                     'comment_count' => 1,
                     'participant_count' => 1,
                     'post_number_index' => 1,
@@ -42,7 +43,7 @@ class ListDiscussionsSortTest extends TestCase
                     'user_id' => 1,
                     'first_post_id' => 1,
                     'last_posted_at' => Carbon::now(),
-                    'last_posted_number' => 1,
+                    'last_post_number' => 1,
                     'last_post_id' => 1,
                     'like_count' => 5,
                 ],
