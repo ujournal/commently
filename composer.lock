@@ -403,7 +403,7 @@
             "dist": {
                 "type": "path",
                 "url": "extensions/api-docs",
-                "reference": "d44f7e4bbb939ad06617a58b24298e1d8d975853"
+                "reference": "1ceafad0816347b7d3fca7d919837d1f08b1d7d2"
             },
             "require": {
                 "flarum/core": "^1.8"
@@ -412,7 +412,12 @@
             "extra": {
                 "flarum-extension": {
                     "title": "API Docs",
-                    "category": "integration"
+                    "category": "integration",
+                    "icon": {
+                        "name": "fas fa-book-open",
+                        "backgroundColor": "#0ea5e9",
+                        "color": "#fff"
+                    }
                 }
             },
             "autoload": {
@@ -434,7 +439,7 @@
             "dist": {
                 "type": "path",
                 "url": "extensions/database-session",
-                "reference": "45ee50db66818586e72d7a2f3708867a44cd5bbf"
+                "reference": "10405b8f1f59aac4976cc4889493c39342800428"
             },
             "require": {
                 "flarum/core": "^1.8"
@@ -443,7 +448,12 @@
             "extra": {
                 "flarum-extension": {
                     "title": "Database Session",
-                    "category": "feature"
+                    "category": "feature",
+                    "icon": {
+                        "name": "fas fa-database",
+                        "backgroundColor": "#3b82f6",
+                        "color": "#fff"
+                    }
                 }
             },
             "autoload": {
@@ -465,7 +475,7 @@
             "dist": {
                 "type": "path",
                 "url": "extensions/sort-by-likes",
-                "reference": "eadd3d575fe1bc2e2db15ebc37f6923bd0bf360e"
+                "reference": "b8faac211e9deafc6665fba4d767d9eaff375f15"
             },
             "require": {
                 "flarum/core": "^1.8",
@@ -475,7 +485,12 @@
             "extra": {
                 "flarum-extension": {
                     "title": "Sort by Likes",
-                    "category": "feature"
+                    "category": "feature",
+                    "icon": {
+                        "name": "fas fa-heart",
+                        "backgroundColor": "#ec4899",
+                        "color": "#fff"
+                    }
                 }
             },
             "autoload": {
@@ -497,7 +512,7 @@
             "dist": {
                 "type": "path",
                 "url": "extensions/upload-dimensions",
-                "reference": "9612925c6ed289cc446f1b88d32c219ed769be9f"
+                "reference": "ead3c1142b027391318baadf631dff56e931c128"
             },
             "require": {
                 "flarum/core": "^1.8",
@@ -508,7 +523,12 @@
             "extra": {
                 "flarum-extension": {
                     "title": "Upload Dimensions",
-                    "category": "feature"
+                    "category": "feature",
+                    "icon": {
+                        "name": "fas fa-ruler-combined",
+                        "backgroundColor": "#8b5cf6",
+                        "color": "#fff"
+                    }
                 }
             },
             "autoload": {

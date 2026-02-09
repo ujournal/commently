@@ -1,21 +1,26 @@
 {
-    "name": "commently/api-docs",
-    "description": "Auto-generated OpenAPI (Swagger) documentation for the Flarum API at /docs",
-    "type": "flarum-extension",
-    "version": "1.0.0",
-    "license": "MIT",
-    "require": {
-        "flarum/core": "^1.8"
-    },
-    "autoload": {
-        "psr-4": {
-            "Commently\\ApiDocs\\": "src/"
-        }
-    },
-    "extra": {
-        "flarum-extension": {
-            "title": "API Docs",
-            "category": "integration"
-        }
+  "name": "commently/api-docs",
+  "description": "Auto-generated OpenAPI (Swagger) documentation for the Flarum API at /docs",
+  "type": "flarum-extension",
+  "version": "1.0.0",
+  "license": "MIT",
+  "require": {
+    "flarum/core": "^1.8"
+  },
+  "autoload": {
+    "psr-4": {
+      "Commently\\ApiDocs\\": "src/"
     }
+  },
+  "extra": {
+    "flarum-extension": {
+      "title": "API Docs",
+      "category": "integration",
+      "icon": {
+        "name": "fas fa-book-open",
+        "backgroundColor": "#0ea5e9",
+        "color": "#fff"
+      }
+    }
+  }
 }

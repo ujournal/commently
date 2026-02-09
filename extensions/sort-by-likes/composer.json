@@ -1,22 +1,27 @@
 {
-    "name": "commently/sort-by-likes",
-    "description": "Allow sorting discussions by total post likes (API only)",
-    "type": "flarum-extension",
-    "version": "1.0.0",
-    "license": "MIT",
-    "require": {
-        "flarum/core": "^1.8",
-        "flarum/likes": "*"
-    },
-    "autoload": {
-        "psr-4": {
-            "Commently\\SortByLikes\\": "src/"
-        }
-    },
-    "extra": {
-        "flarum-extension": {
-            "title": "Sort by Likes",
-            "category": "feature"
-        }
+  "name": "commently/sort-by-likes",
+  "description": "Allow sorting discussions by total post likes (API only)",
+  "type": "flarum-extension",
+  "version": "1.0.0",
+  "license": "MIT",
+  "require": {
+    "flarum/core": "^1.8",
+    "flarum/likes": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Commently\\SortByLikes\\": "src/"
     }
+  },
+  "extra": {
+    "flarum-extension": {
+      "title": "Sort by Likes",
+      "category": "feature",
+      "icon": {
+        "name": "fas fa-heart",
+        "backgroundColor": "#ec4899",
+        "color": "#fff"
+      }
+    }
+  }
 }

@@ -1,21 +1,26 @@
 {
-    "name": "commently/database-session",
-    "description": "Database session driver for Flarum. Store sessions in the database instead of files.",
-    "type": "flarum-extension",
-    "version": "1.0.0",
-    "license": "MIT",
-    "require": {
-        "flarum/core": "^1.8"
-    },
-    "autoload": {
-        "psr-4": {
-            "Commently\\DatabaseSession\\": "src/"
-        }
-    },
-    "extra": {
-        "flarum-extension": {
-            "title": "Database Session",
-            "category": "feature"
-        }
+  "name": "commently/database-session",
+  "description": "Database session driver for Flarum. Store sessions in the database instead of files.",
+  "type": "flarum-extension",
+  "version": "1.0.0",
+  "license": "MIT",
+  "require": {
+    "flarum/core": "^1.8"
+  },
+  "autoload": {
+    "psr-4": {
+      "Commently\\DatabaseSession\\": "src/"
     }
+  },
+  "extra": {
+    "flarum-extension": {
+      "title": "Database Session",
+      "category": "feature",
+      "icon": {
+        "name": "fas fa-database",
+        "backgroundColor": "#3b82f6",
+        "color": "#fff"
+      }
+    }
+  }
 }
