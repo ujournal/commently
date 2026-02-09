@@ -25,7 +25,7 @@ class ListDiscussionsSortTest extends TestCase
 
         parent::setUp();
 
-        $this->extension('flarum-likes', 'ujournal-sort-by-likes');
+        $this->extension('flarum-likes', 'commently-sort-by-likes');
 
         $this->prepareDatabase([
             'users' => [

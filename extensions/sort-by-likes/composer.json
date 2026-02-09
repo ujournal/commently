@@ -1,5 +1,5 @@
 {
-    "name": "ujournal/sort-by-likes",
+    "name": "commently/sort-by-likes",
     "description": "Allow sorting discussions by total post likes (API only)",
     "type": "flarum-extension",
     "version": "1.0.0",

@@ -28,11 +28,16 @@
     {
       "type": "path",
       "url": "extensions/sort-by-likes"
+    },
+    {
+      "type": "path",
+      "url": "extensions/api-docs"
     }
   ],
   "require": {
-    "ujournal/upload-dimensions": "^1.0",
-    "ujournal/sort-by-likes": "^1.0",
+    "commently/api-docs": "^1.0",
+    "commently/upload-dimensions": "^1.0",
+    "commently/sort-by-likes": "^1.0",
     "blomstra/s3-assets": "*",
     "flarum/approval": "*",
     "flarum/bbcode": "*",

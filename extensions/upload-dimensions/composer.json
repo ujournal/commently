@@ -1,5 +1,5 @@
 {
-    "name": "ujournal/upload-dimensions",
+    "name": "commently/upload-dimensions",
     "description": "Adds width and height to FoF Upload files",
     "type": "flarum-extension",
     "version": "1.0.0",

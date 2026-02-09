@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "65acb6c92f692909366bd74edf0faafc",
+    "content-hash": "b4e77a849621ce475f72fa9eb2cbbba0",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -396,6 +396,102 @@
                 }
             ],
             "time": "2023-10-01T12:35:29+00:00"
+        },
+        {
+            "name": "commently/api-docs",
+            "version": "1.0.0",
+            "dist": {
+                "type": "path",
+                "url": "extensions/api-docs",
+                "reference": "d44f7e4bbb939ad06617a58b24298e1d8d975853"
+            },
+            "require": {
+                "flarum/core": "^1.8"
+            },
+            "type": "flarum-extension",
+            "extra": {
+                "flarum-extension": {
+                    "title": "API Docs",
+                    "category": "integration"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Commently\\ApiDocs\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Auto-generated OpenAPI (Swagger) documentation for the Flarum API at /docs",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "commently/sort-by-likes",
+            "version": "1.0.0",
+            "dist": {
+                "type": "path",
+                "url": "extensions/sort-by-likes",
+                "reference": "eadd3d575fe1bc2e2db15ebc37f6923bd0bf360e"
+            },
+            "require": {
+                "flarum/core": "^1.8",
+                "flarum/likes": "*"
+            },
+            "type": "flarum-extension",
+            "extra": {
+                "flarum-extension": {
+                    "title": "Sort by Likes",
+                    "category": "feature"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Commently\\SortByLikes\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Allow sorting discussions by total post likes (API only)",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "commently/upload-dimensions",
+            "version": "1.0.0",
+            "dist": {
+                "type": "path",
+                "url": "extensions/upload-dimensions",
+                "reference": "9612925c6ed289cc446f1b88d32c219ed769be9f"
+            },
+            "require": {
+                "flarum/core": "^1.8",
+                "fof/upload": "*",
+                "intervention/image": "^2.5"
+            },
+            "type": "flarum-extension",
+            "extra": {
+                "flarum-extension": {
+                    "title": "Upload Dimensions",
+                    "category": "feature"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Commently\\UploadDimensions\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Adds width and height to FoF Upload files",
+            "transport-options": {
+                "relative": true
+            }
         },
         {
             "name": "components/font-awesome",
@@ -1544,16 +1640,16 @@
         },
         {
             "name": "flarum/core",
-            "version": "v1.8.12",
+            "version": "v1.8.13",
             "source": {
                 "type": "git",
                 "url": "https://github.com/flarum/flarum-core.git",
-                "reference": "681f602c5fa8d4afd5d43ae9921551b9906699fd"
+                "reference": "9043e420714058b54abc988c285c8117ebd31aa7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/flarum/flarum-core/zipball/681f602c5fa8d4afd5d43ae9921551b9906699fd",
-                "reference": "681f602c5fa8d4afd5d43ae9921551b9906699fd",
+                "url": "https://api.github.com/repos/flarum/flarum-core/zipball/9043e420714058b54abc988c285c8117ebd31aa7",
+                "reference": "9043e420714058b54abc988c285c8117ebd31aa7",
                 "shasum": ""
             },
             "require": {
@@ -1686,7 +1782,7 @@
                     "type": "other"
                 }
             ],
-            "time": "2026-01-07T08:54:15+00:00"
+            "time": "2026-02-09T11:39:21+00:00"
         },
         {
             "name": "flarum/emoji",
@@ -9930,71 +10026,6 @@
                 "source": "https://github.com/tijsverkoyen/CssToInlineStyles/tree/v2.4.0"
             },
             "time": "2025-12-02T11:56:42+00:00"
-        },
-        {
-            "name": "ujournal/sort-by-likes",
-            "version": "1.0.0",
-            "dist": {
-                "type": "path",
-                "url": "extensions/sort-by-likes",
-                "reference": "300bd620a3181f76767df7db922312cff5828e0e"
-            },
-            "require": {
-                "flarum/core": "^1.8",
-                "flarum/likes": "*"
-            },
-            "type": "flarum-extension",
-            "extra": {
-                "flarum-extension": {
-                    "title": "Sort by Likes",
-                    "category": "feature"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Commently\\SortByLikes\\": "src/"
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "description": "Allow sorting discussions by total post likes (API only)",
-            "transport-options": {
-                "relative": true
-            }
-        },
-        {
-            "name": "ujournal/upload-dimensions",
-            "version": "1.0.0",
-            "dist": {
-                "type": "path",
-                "url": "extensions/upload-dimensions",
-                "reference": "b7ac2127eff86b4e27d4cb92f4a5a0a16b032cc5"
-            },
-            "require": {
-                "flarum/core": "^1.8",
-                "fof/upload": "*",
-                "intervention/image": "^2.5"
-            },
-            "type": "flarum-extension",
-            "extra": {
-                "flarum-extension": {
-                    "title": "Upload Dimensions",
-                    "category": "feature"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Commently\\UploadDimensions\\": "src/"
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "description": "Adds width and height to FoF Upload files",
-            "transport-options": {
-                "relative": true
-            }
         },
         {
             "name": "vlucas/phpdotenv",
