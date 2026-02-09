@@ -25,4 +25,13 @@ return [
         'poweredByHeader' => filter_var(getenv('APP_HEADER_POWERED_BY') ?: 'true', FILTER_VALIDATE_BOOLEAN),
         'referrerPolicy' => getenv('APP_REFERRER_POLICY') ?: 'same-origin',
     ],
+
+    // Session driver: 'file' (default), 'database', 'cookie', 'array'
+    // For 'database', create the sessions table: php flarum migrate
+    'session' => [
+        'driver' => getenv('SESSION_DRIVER') ?: 'file',
+        'lifetime' => (int) (getenv('SESSION_LIFETIME') ?: 120),
+        'table' => getenv('SESSION_TABLE') ?: 'sessions',
+        'connection' => getenv('SESSION_CONNECTION') ?: null,
+    ],
 ];

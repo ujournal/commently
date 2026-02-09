@@ -32,19 +32,25 @@
     {
       "type": "path",
       "url": "extensions/api-docs"
+    },
+    {
+      "type": "path",
+      "url": "extensions/database-session"
     }
   ],
   "require": {
-    "commently/api-docs": "^1.0",
-    "commently/upload-dimensions": "^1.0",
-    "commently/sort-by-likes": "^1.0",
     "blomstra/s3-assets": "*",
+    "commently/api-docs": "^1.0",
+    "commently/sort-by-likes": "^1.0",
+    "commently/database-session": "^1.0",
+    "commently/upload-dimensions": "^1.0",
+    "flarum-lang/ukrainian": "^1.54",
     "flarum/approval": "*",
     "flarum/bbcode": "*",
     "flarum/core": "^1.8",
     "flarum/emoji": "*",
     "flarum/flags": "*",
-    "flarum/lang-english": "*",
+    "flarum/lang-english": "^1.8",
     "flarum/likes": "*",
     "flarum/lock": "*",
     "flarum/markdown": "*",

@@ -5,6 +5,11 @@ use Illuminate\Database\Schema\Builder;
 
 return [
     'up' => function (Builder $schema) {
+        $columns = $schema->getColumnListing('discussions');
+        if (in_array('like_count', $columns)) {
+            return;
+        }
+
         $schema->table('discussions', function (Blueprint $table) {
             $table->unsignedInteger('like_count')->default(0)->after('comment_count');
         });
@@ -20,6 +25,11 @@ return [
         );
     },
     'down' => function (Builder $schema) {
+        $columns = $schema->getColumnListing('discussions');
+        if (! in_array('like_count', $columns)) {
+            return;
+        }
+
         $schema->table('discussions', function (Blueprint $table) {
             $table->dropColumn('like_count');
         });

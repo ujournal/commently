@@ -15,6 +15,7 @@ UJournal.
 - `commently/sort-by-likes` - Reddit-like сортування дискуссій
 - `commently/upload-dimensions` - Збереження розмірів картинки при завантаженні через `fof/upload`
 - `commently/api-docs` - Swagger документація
+- `commently/database-session` - Збереження сессії користувача в БД
 
 ## Встановлення та запуск
 

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b4e77a849621ce475f72fa9eb2cbbba0",
+    "content-hash": "42a3d6f291c4a8655354002dae767772",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -424,6 +424,37 @@
                 "MIT"
             ],
             "description": "Auto-generated OpenAPI (Swagger) documentation for the Flarum API at /docs",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "commently/database-session",
+            "version": "1.0.0",
+            "dist": {
+                "type": "path",
+                "url": "extensions/database-session",
+                "reference": "45ee50db66818586e72d7a2f3708867a44cd5bbf"
+            },
+            "require": {
+                "flarum/core": "^1.8"
+            },
+            "type": "flarum-extension",
+            "extra": {
+                "flarum-extension": {
+                    "title": "Database Session",
+                    "category": "feature"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Commently\\DatabaseSession\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Database session driver for Flarum. Store sessions in the database instead of files.",
             "transport-options": {
                 "relative": true
             }
@@ -1481,6 +1512,75 @@
                 }
             ],
             "time": "2025-08-08T12:00:00+00:00"
+        },
+        {
+            "name": "flarum-lang/ukrainian",
+            "version": "v1.54.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/flarum-lang/ukrainian.git",
+                "reference": "bec5ddf0c4330a31377191389c75effd6fa2dff6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/flarum-lang/ukrainian/zipball/bec5ddf0c4330a31377191389c75effd6fa2dff6",
+                "reference": "bec5ddf0c4330a31377191389c75effd6fa2dff6",
+                "shasum": ""
+            },
+            "require": {
+                "flarum/core": "^1.3"
+            },
+            "type": "flarum-extension",
+            "extra": {
+                "extiverse": {
+                    "discuss": "https://discuss.flarum.org/d/31921"
+                },
+                "branch-alias": {
+                    "dev-master": "1.x-dev"
+                },
+                "flarum-locale": {
+                    "code": "uk",
+                    "title": "Українська"
+                },
+                "flarum-extension": {
+                    "icon": {
+                        "image": "icon.svg",
+                        "backgroundSize": "cover",
+                        "backgroundPosition": "center"
+                    },
+                    "title": "Українська",
+                    "category": "language"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Denys Nosov",
+                    "email": "denys@joomla-ua.org",
+                    "homepage": "https://community.joomla-ua.org/"
+                }
+            ],
+            "description": "Ukrainian language pack for Flarum.",
+            "homepage": "https://github.com/flarum-lang/ukrainian",
+            "keywords": [
+                "flarum",
+                "locale",
+                "uk-locale"
+            ],
+            "support": {
+                "issues": "https://github.com/flarum-lang/ukrainian/issues",
+                "source": "https://github.com/flarum-lang/ukrainian"
+            },
+            "funding": [
+                {
+                    "url": "https://send.monobank.ua/jar/7u4x6vNRZJ",
+                    "type": "website"
+                }
+            ],
+            "time": "2025-12-15T00:28:58+00:00"
         },
         {
             "name": "flarum/approval",
