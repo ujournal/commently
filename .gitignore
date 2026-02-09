@@ -1,6 +1,6 @@
 .DS_Store
 vendor/
-public/assets/
+public/assets/avatar/
 .env
 CHANGELOG.md
 storage/*/*
