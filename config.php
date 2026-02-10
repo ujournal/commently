@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'debug' => filter_var(getenv('APP_DEBUG'), FILTER_VALIDATE_BOOLEAN),
+    'debug' => filter_var(getenv('APP_DEBUG') ?: 'false', FILTER_VALIDATE_BOOLEAN),
     'database' => [
         'driver' => 'mysql',
         'host' => getenv('DB_HOST') ?: '127.0.0.1',
