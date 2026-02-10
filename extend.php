@@ -13,6 +13,11 @@ use Flarum\Extend;
 use Flarum\Likes\Api\LoadLikesRelationship;
 use Flarum\Http\Middleware\CheckCsrfToken;
 use App\Access\AllowLikePolicy;
+use App\Extend\UseBasicPostSerializerNoRenderLog;
+use App\Extend\WrapFormatterWithParseBeforeRender;
+use App\Formatter\NormalizeUplImagePreviewBbcode;
+use App\Listeners\NormalizeFofUploadMethodToAwsS3;
+use FoF\Upload\Events\File\WillBeSaved;
 use Flarum\Post\CommentPost;
 use Flarum\Post\Post;
 use Illuminate\Support\Collection;
@@ -28,6 +33,20 @@ return [
         ->modelPolicy(CommentPost::class, AllowLikePolicy::class),
     (new FoF\Upload\Extend\Adapters())
         ->force('aws-s3'),
+
+    // Do not log post content render errors to the log file (same API behavior)
+    new UseBasicPostSerializerNoRenderLog(),
+
+    // FoF sets upload_method from class name (AwsS3 → "awss3"); we use key "aws-s3", so normalize before save
+    (new Extend\Event())
+        ->listen(WillBeSaved::class, NormalizeFofUploadMethodToAwsS3::class),
+
+    // Parse raw BBCode before render so posts with stored BBCode (e.g. [upl-image-preview]) display correctly
+    new WrapFormatterWithParseBeforeRender(),
+
+    // Normalize [upl-image-preview] attributes (quote url=) so the BBCode parser accepts them
+    (new Extend\Formatter())
+        ->parse(NormalizeUplImagePreviewBbcode::class),
 
     // FoF Upload: use .env for S3 when not set in Flarum Admin (e.g. on shared hosting)
     (new Extend\Settings())

@@ -27,7 +27,6 @@ class ParseBeforeRenderFormatter extends Formatter
     }
 
     /**
-     * {@inheritdoc}
      * When content looks like raw BBCode (not XML), parse it first then render.
      */
     public function render($xml, $context = null, ServerRequestInterface $request = null)
