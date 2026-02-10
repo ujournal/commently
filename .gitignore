@@ -1,7 +1,15 @@
+# Ignore files
 .DS_Store
-vendor/
-public/assets/avatar/
 .env
-CHANGELOG.md
+*.cache
+
+# Ignore directories
+vendor/
+public/assets/avatars/*
+public/assets/files/*/*
 storage/*/*
+
+# Keep empty directories
+!public/assets/avatars/.gitkeep
+!public/assets/files/.gitkeep
 !.gitkeep
