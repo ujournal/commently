@@ -29,6 +29,17 @@ return [
     (new FoF\Upload\Extend\Adapters())
         ->force('aws-s3'),
 
+    // FoF Upload: use .env for S3 when not set in Flarum Admin (e.g. on shared hosting)
+    (new Extend\Settings())
+        ->default('fof-upload.awsS3Region', env('FOF_UPLOAD_AWS_S3_REGION', ''))
+        ->default('fof-upload.awsS3Key', env('FOF_UPLOAD_AWS_S3_KEY', ''))
+        ->default('fof-upload.awsS3Secret', env('FOF_UPLOAD_AWS_S3_SECRET', ''))
+        ->default('fof-upload.awsS3Bucket', env('FOF_UPLOAD_AWS_S3_BUCKET', ''))
+        ->default('fof-upload.awsS3Endpoint', env('FOF_UPLOAD_AWS_S3_ENDPOINT', ''))
+        ->default('fof-upload.awsS3UsePathStyleEndpoint', env('FOF_UPLOAD_AWS_S3_USE_PATH_STYLE_ENDPOINT', false))
+        ->default('fof-upload.awsS3Acl', env('FOF_UPLOAD_AWS_S3_ACL', 'public-read'))
+        ->default('fof-upload.awsS3CustomUrl', env('FOF_UPLOAD_AWS_S3_CUSTOM_URL', '')),
+
     // Expose canLike and likesCount on firstPost/lastPost (they use BasicPostSerializer)
     (new Extend\ApiSerializer(BasicPostSerializer::class))
         ->attributes(function ($serializer, $post) {
