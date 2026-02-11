@@ -63,6 +63,7 @@
     "flarum/subscriptions": "*",
     "flarum/suspend": "*",
     "flarum/tags": "^1.8",
+    "fof/oauth": "^1.7",
     "fof/polls": "*",
     "fof/upload": "*",
     "league/flysystem-aws-s3-v3": "^1.0",
