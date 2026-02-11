@@ -63,6 +63,7 @@
     "flarum/subscriptions": "*",
     "flarum/suspend": "*",
     "flarum/tags": "^1.8",
+    "fof/polls": "*",
     "fof/upload": "*",
     "league/flysystem-aws-s3-v3": "^1.0",
     "vlucas/phpdotenv": "^5.6"

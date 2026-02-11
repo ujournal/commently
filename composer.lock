@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "32709d463318746b278a0ecb338cdb76",
+    "content-hash": "5742f81d2f9ced4fd94e234cde401d85",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -3079,6 +3079,86 @@
                 }
             ],
             "time": "2026-01-05T09:01:55+00:00"
+        },
+        {
+            "name": "fof/polls",
+            "version": "2.3.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/FriendsOfFlarum/polls.git",
+                "reference": "8517a9edadad7f6e1a8ed758626d0e36018d08c9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/FriendsOfFlarum/polls/zipball/8517a9edadad7f6e1a8ed758626d0e36018d08c9",
+                "reference": "8517a9edadad7f6e1a8ed758626d0e36018d08c9",
+                "shasum": ""
+            },
+            "require": {
+                "flarum/core": "^1.8.0"
+            },
+            "conflict": {
+                "reflar/polls": "*"
+            },
+            "require-dev": {
+                "flarum/phpstan": "*",
+                "flarum/testing": "^1.0.0"
+            },
+            "type": "flarum-extension",
+            "extra": {
+                "flagrow": {
+                    "discuss": "https://discuss.flarum.org/d/20586"
+                },
+                "flarum-cli": {
+                    "modules": {
+                        "githubActions": true,
+                        "backendTesting": true
+                    }
+                },
+                "flarum-extension": {
+                    "icon": {
+                        "name": "fas fa-poll",
+                        "color": "#fff",
+                        "backgroundColor": "#e74c3c"
+                    },
+                    "title": "FoF Polls",
+                    "category": "discussion"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "FoF\\Polls\\": "src/",
+                    "FoF\\Polls\\Migrations\\": "migrations/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "David Sevilla Martin",
+                    "email": "david.s@redevs.org",
+                    "role": "Developer"
+                }
+            ],
+            "description": " A Flarum extension that adds polls to your discussions",
+            "homepage": "https://friendsofflarum.org",
+            "keywords": [
+                "flarum"
+            ],
+            "support": {
+                "forum": "https://discuss.flarum.org/d/20586",
+                "issues": "https://github.com/FriendsOfFlarum/polls/issues",
+                "source": "https://github.com/FriendsOfFlarum/polls"
+            },
+            "funding": [
+                {
+                    "url": "https://opencollective.com/fof/donate",
+                    "type": "website"
+                }
+            ],
+            "time": "2025-11-25T15:08:29+00:00"
         },
         {
             "name": "fof/upload",
