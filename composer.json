@@ -50,6 +50,7 @@
     "commently/database-session": "^1.0",
     "commently/sort-by-likes": "^1.0",
     "commently/upload-dimensions": "^1.0",
+    "datlechin/flarum-title-length": "*",
     "flarum-lang/ukrainian": "^1.54",
     "flarum/approval": "*",
     "flarum/bbcode": "*",

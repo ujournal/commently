@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8eea39f06a9fb07887b84a66c7d0b88f",
+    "content-hash": "2e63dbe9bad8bd2989d2fda8b99eaa35",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -675,6 +675,83 @@
                 "source": "https://github.com/components/font-awesome/tree/5.15.4"
             },
             "time": "2021-08-15T10:31:24+00:00"
+        },
+        {
+            "name": "datlechin/flarum-title-length",
+            "version": "v0.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/datlechin/flarum-title-length.git",
+                "reference": "6f52a53f31a2025d792dccd731f846cbe69f0d10"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/datlechin/flarum-title-length/zipball/6f52a53f31a2025d792dccd731f846cbe69f0d10",
+                "reference": "6f52a53f31a2025d792dccd731f846cbe69f0d10",
+                "shasum": ""
+            },
+            "require": {
+                "flarum/core": "^1.2"
+            },
+            "type": "flarum-extension",
+            "extra": {
+                "flarum-cli": {
+                    "modules": {
+                        "js": true,
+                        "css": false,
+                        "admin": true,
+                        "forum": false,
+                        "locale": true,
+                        "gitConf": true,
+                        "styleci": true,
+                        "jsCommon": false,
+                        "prettier": true,
+                        "typescript": false,
+                        "bundlewatch": false,
+                        "editorConfig": true,
+                        "githubActions": true,
+                        "backendTesting": false
+                    }
+                },
+                "flarum-extension": {
+                    "icon": {
+                        "name": "fas fa-ruler-horizontal",
+                        "color": "#fff",
+                        "backgroundColor": "#D3241C"
+                    },
+                    "title": "Title Length",
+                    "category": "feature"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Datlechin\\TitleLength\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Ngo Quoc Dat",
+                    "email": "datlechin@gmail.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Customize discussion title length.",
+            "homepage": "https://ngoquocdat.com",
+            "keywords": [
+                "flarum",
+                "flarum-extension",
+                "title length"
+            ],
+            "support": {
+                "forum": "https://discuss.flarum.org/d/29924",
+                "issues": "https://github.com/datlechin/flarum-title-length/issues",
+                "source": "https://github.com/datlechin/flarum-title-length"
+            },
+            "time": "2022-02-23T10:52:13+00:00"
         },
         {
             "name": "dflydev/dot-access-data",
