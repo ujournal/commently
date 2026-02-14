@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b1cfcdc455cb8655fe7f1d7006e20efe",
+    "content-hash": "3fb34f907be4890c8b145d3d2b936199",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -3079,6 +3079,82 @@
                 }
             ],
             "time": "2026-01-05T09:01:55+00:00"
+        },
+        {
+            "name": "fof/discussion-thumbnail",
+            "version": "1.1.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/FriendsOfFlarum/discussion-thumbnail.git",
+                "reference": "0242f3f5b7c2e81c1939803a5350a2b9652c29a4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/FriendsOfFlarum/discussion-thumbnail/zipball/0242f3f5b7c2e81c1939803a5350a2b9652c29a4",
+                "reference": "0242f3f5b7c2e81c1939803a5350a2b9652c29a4",
+                "shasum": ""
+            },
+            "require": {
+                "flarum/core": "^1.2.0"
+            },
+            "require-dev": {
+                "flarum/phpstan": "*"
+            },
+            "type": "flarum-extension",
+            "extra": {
+                "flagrow": {
+                    "discuss": "https://discuss.flarum.org/d/22231"
+                },
+                "flarum-cli": {
+                    "modules": {
+                        "githubActions": true
+                    }
+                },
+                "flarum-extension": {
+                    "icon": {
+                        "name": "fas fa-image",
+                        "color": "#fff",
+                        "backgroundColor": "#e74c3c"
+                    },
+                    "title": "FoF Discussion Thumbnail",
+                    "category": "feature"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "FoF\\DiscussionThumbnail\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "David Sevilla Martin",
+                    "email": "me+fof@datitisev.me",
+                    "homepage": "https://datitisev.me",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Replace author avatars with the first image in a discussion's starting post",
+            "homepage": "https://friendsofflarum.org",
+            "keywords": [
+                "flarum",
+                "friendsofflarum"
+            ],
+            "support": {
+                "forum": "https://discuss.flarum.org/d/22231",
+                "issues": "https://github.com/FriendsOfFlarum/discussion-thumbnail/issues",
+                "source": "https://github.com/FriendsOfFlarum/discussion-thumbnail"
+            },
+            "funding": [
+                {
+                    "url": "https://opencollective.com/fof/donate",
+                    "type": "website"
+                }
+            ],
+            "time": "2023-11-12T14:21:20+00:00"
         },
         {
             "name": "fof/extend",
@@ -8819,6 +8895,72 @@
                 "source": "https://github.com/SychO9/errors/tree/3.0.0"
             },
             "time": "2022-04-09T13:10:47+00:00"
+        },
+        {
+            "name": "sycho/flarum-profile-cover",
+            "version": "v1.3.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/SychO9/flarum-profile-cover.git",
+                "reference": "b36d1fae34cbdf6838fef39647e63c3577fd833d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/SychO9/flarum-profile-cover/zipball/b36d1fae34cbdf6838fef39647e63c3577fd833d",
+                "reference": "b36d1fae34cbdf6838fef39647e63c3577fd833d",
+                "shasum": ""
+            },
+            "require": {
+                "flarum/core": "^1.2.0"
+            },
+            "type": "flarum-extension",
+            "extra": {
+                "flagrow": {
+                    "discuss": "https://discuss.flarum.org/d/23437"
+                },
+                "branch-alias": {
+                    "dev-master": "1.x.x-dev"
+                },
+                "flarum-extension": {
+                    "icon": {
+                        "name": "fas fa-image",
+                        "color": "#fff",
+                        "backgroundColor": "#117187"
+                    },
+                    "title": "Profile Cover",
+                    "category": "feature"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "SychO\\ProfileCover\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sami Ilyes Mazouz",
+                    "email": "ilyasmazouz@gmail.com",
+                    "homepage": "https://sycho9.github.io"
+                }
+            ],
+            "description": "Adds the ability to add a cover image to a profile.",
+            "homepage": "https://sycho9.github.io",
+            "support": {
+                "forum": "https://discuss.flarum.org/d/23437",
+                "issues": "https://github.com/SychO9/flarum-profile-cover/issues",
+                "source": "https://github.com/SychO9/flarum-profile-cover"
+            },
+            "funding": [
+                {
+                    "url": "https://www.buymeacoffee.com/sycho",
+                    "type": "other"
+                }
+            ],
+            "time": "2023-05-26T07:17:52+00:00"
         },
         {
             "name": "sycho/json-api",

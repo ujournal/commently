@@ -63,6 +63,7 @@
     "flarum/subscriptions": "*",
     "flarum/suspend": "*",
     "flarum/tags": "^1.8",
+    "fof/discussion-thumbnail": "*",
     "fof/formatting": "^1.1",
     "fof/linguist": "^1.1",
     "fof/oauth": "^1.7",
@@ -70,6 +71,7 @@
     "fof/polls": "*",
     "fof/upload": "*",
     "league/flysystem-aws-s3-v3": "^1.0",
+    "sycho/flarum-profile-cover": "^1.3",
     "vlucas/phpdotenv": "^5.6"
   },
   "require-dev": {
