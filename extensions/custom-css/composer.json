@@ -1,0 +1,21 @@
+{
+  "name": "commently/custom-css",
+  "description": "Add your own CSS/Less files to customize the forum (discussions list, pages, etc.)",
+  "type": "flarum-extension",
+  "version": "1.0.0",
+  "license": "MIT",
+  "require": {
+    "flarum/core": "^1.8"
+  },
+  "extra": {
+    "flarum-extension": {
+      "title": "Custom CSS",
+      "category": "theme",
+      "icon": {
+        "name": "fas fa-paint-brush",
+        "backgroundColor": "#3b82f6",
+        "color": "#fff"
+      }
+    }
+  }
+}

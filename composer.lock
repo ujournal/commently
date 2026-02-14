@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3fb34f907be4890c8b145d3d2b936199",
+    "content-hash": "8eea39f06a9fb07887b84a66c7d0b88f",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -491,6 +491,37 @@
                 "MIT"
             ],
             "description": "Auto-generated OpenAPI (Swagger) documentation for the Flarum API at /docs",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "commently/custom-css",
+            "version": "1.0.0",
+            "dist": {
+                "type": "path",
+                "url": "extensions/custom-css",
+                "reference": "03e345b0161fa86f6f361337dd262c4aaaefbb0b"
+            },
+            "require": {
+                "flarum/core": "^1.8"
+            },
+            "type": "flarum-extension",
+            "extra": {
+                "flarum-extension": {
+                    "title": "Custom CSS",
+                    "category": "theme",
+                    "icon": {
+                        "name": "fas fa-paint-brush",
+                        "backgroundColor": "#3b82f6",
+                        "color": "#fff"
+                    }
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Add your own CSS/Less files to customize the forum (discussions list, pages, etc.)",
             "transport-options": {
                 "relative": true
             }

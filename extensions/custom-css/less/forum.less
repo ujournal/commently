@@ -1,0 +1,96 @@
+/**
+ * Custom CSS for the forum frontend
+ * Edit this file to customize the discussions list and other pages.
+ *
+ * Useful selectors for discussions list:
+ * - .DiscussionList - main discussions container
+ * - .DiscussionListItem - each discussion row
+ * - .DiscussionList-discussions - list wrapper
+ * - .DiscussionListItem-content - discussion content area
+ * - .DiscussionListItem-title - discussion title
+ * - .DiscussionListItem-info - meta info (author, replies, etc.)
+ */
+
+/* Example: customize discussion list items */
+/*
+.DiscussionListItem {
+  // Your styles here
+}
+
+.DiscussionListItem-title {
+  // Title styling
+}
+*/
+
+.DiscussionListItem {
+  .DiscussionListItem-main {
+    display: unset;
+    width: unset;
+    flex: 1;
+  }
+
+  .DiscussionListItem-badges {
+    position: absolute;
+    top: -8px;
+    left: 0;
+    margin-left: unset;
+    width: unset;
+  }
+
+  @media (min-width: 768px) {
+    .DiscussionListItem-main {
+      margin-right: unset;
+    }
+
+    .DiscussionListItem-count {
+      margin-right: unset;
+    }
+  }
+
+  .DiscussionListItem-author {
+    width: unset;
+    margin-left: unset;
+    max-width: 100px;
+    min-width: 100px;
+    aspect-ratio: 1.41;
+    margin-top: 12px;
+    margin-bottom: 12px;
+
+    .Avatar {
+      width: 100%;
+      height: 100%;
+      border-radius: 8px;
+      object-fit: cover;
+      object-position: center;
+    }
+  }
+
+  .DiscussionListItem-content {
+    padding-left: unset;
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    flex: 1;
+    padding-left: unset;
+    padding-right: unset;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .DiscussionList {
+    margin: unset;
+  }
+}
+
+@media (min-width: 768px) {
+  .DiscussionPage-list .DiscussionListItem {
+    margin-left: unset;
+    margin-right: unset;
+    padding-inline: 12px;
+  }
+
+  .hasPane .DiscussionListItem .DiscussionListItem-author {
+    max-width: 80px;
+    min-width: 80px;
+  }
+}

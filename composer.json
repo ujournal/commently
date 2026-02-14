@@ -36,12 +36,17 @@
     {
       "type": "path",
       "url": "extensions/database-session"
+    },
+    {
+      "type": "path",
+      "url": "extensions/custom-css"
     }
   ],
   "require": {
     "blomstra/s3-assets": "*",
     "clarkwinkelmann/flarum-ext-first-post-approval": "^1.0",
     "commently/api-docs": "^1.0",
+    "commently/custom-css": "^1.0",
     "commently/database-session": "^1.0",
     "commently/sort-by-likes": "^1.0",
     "commently/upload-dimensions": "^1.0",
