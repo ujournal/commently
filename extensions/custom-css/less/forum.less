@@ -47,9 +47,13 @@
     width: unset;
   }
 
-  .DiscussionListItem:hover .DiscussionListItem-controls {
+  .DiscussionListItem-count:before {
+    margin-left: -18px;
+    margin-top: 4px;
+  }
+
+  .DiscussionListItem-controls {
     opacity: 1;
-    position: unset;
   }
 
   .DiscussionListItem-info {
@@ -72,7 +76,7 @@
   .DiscussionListItem-main {
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
+    gap: 0.35rem;
     width: unset;
     flex: 1;
     min-width: 0;
@@ -98,8 +102,8 @@
     position: absolute;
     bottom: unset;
     left: unset;
-    top: 1.5rem;
-    right: 2.5rem;
+    top: -1.75rem;
+    right: 0;
     margin-top: unset;
     margin-left: unset;
     width: unset;
