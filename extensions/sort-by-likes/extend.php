@@ -17,6 +17,8 @@ use Commently\SortByLikes\Access\AllowGlobalLikePostsPolicy;
 use Commently\SortByLikes\Filter\ApplyHotSortMutator;
 
 return [
+    (new Extend\Frontend('forum'))
+        ->js(__DIR__.'/js/dist/forum.js'),
     (new Extend\Policy())
         ->modelPolicy(Discussion::class, AllowGlobalLikePostsPolicy::class)
         ->modelPolicy(Post::class, AllowGlobalLikePostPolicy::class)

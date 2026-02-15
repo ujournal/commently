@@ -5,6 +5,7 @@
 
 # Ignore directories
 vendor/
+node_modules/
 public/assets/avatars/*
 public/assets/files/*/*
 storage/*/*
