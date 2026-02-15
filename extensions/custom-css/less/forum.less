@@ -22,21 +22,74 @@
 }
 */
 
+.DiscussionList-discussions {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
 .DiscussionListItem {
+  padding: 1rem;
+  margin-inline: unset;
+  border: 1px solid var(--control-bg);
+  border-radius: 0.5rem;
+
+  .DiscussionListItem-title {
+    margin-bottom: unset;
+    margin-right: unset;
+  }
+
+  .DiscussionListItem-count {
+    position: absolute;
+    top: 1.5rem;
+    right: 0;
+    margin-top: 0;
+    width: unset;
+  }
+
+  .DiscussionListItem:hover .DiscussionListItem-controls {
+    opacity: 1;
+    position: unset;
+  }
+
+  .DiscussionListItem-info {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .DiscussionListItem-info > .item-tags {
+    position: unset;
+    right: unset;
+    top: unset;
+  }
+
+  .DiscussionListItem-author {
+    order: 2;
+  }
+
   .DiscussionListItem-main {
-    display: unset;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
     width: unset;
     flex: 1;
     min-width: 0;
     margin-right: 0;
+    padding-top: unset;
+    padding-bottom: unset;
+    padding-right: 3rem;
+    order: 1;
   }
 
   .DiscussionListItem-badges {
     position: absolute;
-    top: -8px;
+    bottom: -8px;
     left: 0;
     margin-left: unset;
     width: unset;
+    z-index: 1;
   }
 
   @media (min-width: 768px) {
@@ -49,16 +102,26 @@
     }
   }
 
+  .DiscussionListItem-author .Avatar {
+    width: unset;
+    height: unset;
+  }
+
+  .DiscussionListItem-author .DiscussionListItem-thumbnail,
+  .DiscussionListItem-author .DiscussionListItem-thumbnail img {
+    width: 100% !important;
+    height: unset !important;
+    aspect-ratio: 16 / 9;
+  }
+
   // Hide discussion image by default (no avatar, no thumbnail when first post has no image)
   .DiscussionListItem-author {
     display: none;
     width: unset;
     margin-left: unset;
-    max-width: 100px;
-    min-width: 100px;
-    aspect-ratio: 1.41;
-    margin-top: 12px;
-    margin-bottom: 12px;
+    aspect-ratio: unset;
+    margin-top: unset;
+    margin-bottom: unset;
 
     .DiscussionListItem-thumbnail,
     .DiscussionListItem-thumbnail img {
@@ -73,12 +136,13 @@
   // Show discussion image ONLY when first post has a photo (post thumbnail present)
   .DiscussionListItem-author:has(.DiscussionListItem-thumbnail) {
     display: block;
+    float: unset;
   }
 
   .DiscussionListItem-content {
     padding-left: unset;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     gap: 12px;
     flex: 1;
     padding-left: unset;
@@ -90,6 +154,11 @@
   .DiscussionList {
     margin: unset;
   }
+
+  .DiscussionListItem .DiscussionListItem-count {
+    margin-right: unset;
+    top: 1rem;
+  }
 }
 
 @media (min-width: 768px) {
@@ -99,7 +168,9 @@
     padding-inline: 12px;
   }
 
-  .hasPane .DiscussionListItem .DiscussionListItem-author:has(.DiscussionListItem-thumbnail) {
+  .hasPane
+    .DiscussionListItem
+    .DiscussionListItem-author:has(.DiscussionListItem-thumbnail) {
     max-width: 80px;
     min-width: 80px;
   }
