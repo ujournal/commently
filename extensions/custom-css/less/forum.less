@@ -127,8 +127,9 @@
   .DiscussionListItem-author .DiscussionListItem-thumbnail,
   .DiscussionListItem-author .DiscussionListItem-thumbnail img {
     width: 100% !important;
+    max-width: 400px;
+    max-height: 400px;
     height: unset !important;
-    aspect-ratio: 16 / 9;
   }
 
   // Hide discussion image by default (no avatar, no thumbnail when first post has no image)
@@ -142,10 +143,8 @@
 
     .DiscussionListItem-thumbnail,
     .DiscussionListItem-thumbnail img {
-      width: 100%;
-      height: 100%;
       border-radius: 8px;
-      object-fit: cover;
+      object-fit: fill;
       object-position: center;
     }
   }
