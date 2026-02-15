@@ -49,7 +49,9 @@
     }
   }
 
+  // Hide discussion image by default (no avatar, no thumbnail when first post has no image)
   .DiscussionListItem-author {
+    display: none;
     width: unset;
     margin-left: unset;
     max-width: 100px;
@@ -58,13 +60,19 @@
     margin-top: 12px;
     margin-bottom: 12px;
 
-    .Avatar {
+    .DiscussionListItem-thumbnail,
+    .DiscussionListItem-thumbnail img {
       width: 100%;
       height: 100%;
       border-radius: 8px;
       object-fit: cover;
       object-position: center;
     }
+  }
+
+  // Show discussion image ONLY when first post has a photo (post thumbnail present)
+  .DiscussionListItem-author:has(.DiscussionListItem-thumbnail) {
+    display: block;
   }
 
   .DiscussionListItem-content {
@@ -91,7 +99,7 @@
     padding-inline: 12px;
   }
 
-  .hasPane .DiscussionListItem .DiscussionListItem-author {
+  .hasPane .DiscussionListItem .DiscussionListItem-author:has(.DiscussionListItem-thumbnail) {
     max-width: 80px;
     min-width: 80px;
   }
