@@ -13,6 +13,7 @@ use FoF\Upload\Events\File\WillBeUploaded;
 use FoF\Upload\File;
 use FoF\Upload\Helpers\Util;
 use FoF\Upload\Repositories\FileRepository;
+use App\Api\SetYoutubeDiscussionThumbnailAttribute;
 use Illuminate\Contracts\Cache\Repository as Cache;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Support\Arr;
@@ -64,6 +65,7 @@ class SetDiscussionThumbnailFromYoutube
         }
         if ($contentHtml !== '' && preg_match('/<img.+?src=[\'"].+?[\'"].*?>/i', $contentHtml)) {
             $this->cache->forget($key);
+            $this->cache->forget(SetYoutubeDiscussionThumbnailAttribute::CACHE_KEY_PREFIX . $post->id);
             return;
         }
 
@@ -71,6 +73,7 @@ class SetDiscussionThumbnailFromYoutube
         $videoId = $this->extractYoutubeVideoIdFromRawContent($post);
         if (! $videoId) {
             $this->cache->forget($key);
+            $this->cache->forget(SetYoutubeDiscussionThumbnailAttribute::CACHE_KEY_PREFIX . $post->id);
             return;
         }
 
@@ -78,6 +81,7 @@ class SetDiscussionThumbnailFromYoutube
         $tempPath = $this->downloadYoutubeCoverToTemp($videoId);
         if (! $tempPath) {
             $this->cache->forget($key);
+            $this->cache->forget(SetYoutubeDiscussionThumbnailAttribute::CACHE_KEY_PREFIX . $post->id);
             return;
         }
 
@@ -85,6 +89,7 @@ class SetDiscussionThumbnailFromYoutube
             $this->uploadCoverViaS3AndSetCache($post, $videoId, $tempPath, $key);
         } catch (\Throwable $e) {
             $this->cache->forget($key);
+            $this->cache->forget(SetYoutubeDiscussionThumbnailAttribute::CACHE_KEY_PREFIX . $post->id);
         } finally {
             if (isset($tempPath) && is_file($tempPath)) {
                 @unlink($tempPath);
@@ -159,6 +164,8 @@ class SetDiscussionThumbnailFromYoutube
 
             // Set discussion thumbnail to the S3 URL (FoF Discussion Thumbnail cache)
             $this->setFofThumbnailCache($cacheKey, $file->url, $post);
+            // Also set our own cache so API attribute can use S3 URL when FoF overwrites with null (no <img> in HTML)
+            $this->cache->forever(SetYoutubeDiscussionThumbnailAttribute::CACHE_KEY_PREFIX . $post->id, $file->url);
         } finally {
             if (isset($tempPath) && is_file($tempPath)) {
                 @unlink($tempPath);
