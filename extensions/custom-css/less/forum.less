@@ -41,7 +41,7 @@
 
   .DiscussionListItem-count {
     position: absolute;
-    top: 1.5rem;
+    top: 0;
     right: 0;
     margin-top: 0;
     width: unset;
@@ -53,7 +53,25 @@
   }
 
   .DiscussionListItem-controls {
+    position: absolute !important;
+    top: unset;
+    right: 0.5rem;
+    bottom: 0.5rem;
+    width: unset;
+    height: unset;
     opacity: 1;
+    z-index: 2;
+  }
+
+  .DiscussionListItem-controls > .Button--icon {
+    width: 2rem;
+    height: 2rem;
+    font-size: 0.75rem;
+    line-height: 1;
+  }
+
+  .DiscussionListItem-controls > .Button--icon .Button-icon {
+    font-size: 0.75rem;
   }
 
   .DiscussionListItem-info {
