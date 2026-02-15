@@ -188,7 +188,7 @@ class SetDiscussionThumbnailFromYoutube
 
     private function extractYoutubeVideoId(string $content): ?string
     {
-        if (preg_match('/'.self::YOUTUBE_ID_REGEX.'/', $content, $m)) {
+        if (preg_match('/' . self::YOUTUBE_ID_REGEX . '/', $content, $m)) {
             return $m[1];
         }
         return null;

@@ -15,8 +15,8 @@ class SetYoutubeDiscussionThumbnailAttribute
 {
     public const CACHE_KEY_PREFIX = 'commently.youtube-thumbnail.post.';
 
-    /** Match YouTube video ID (11 chars) in common URL forms. */
-    private const YOUTUBE_ID_REGEX = '(?:(?:www\.)?youtube\.com/(?:watch\?(?:[^&]*&)*v=|embed/|v/)|youtu\.be/)([a-zA-Z0-9_-]{11})';
+    /** Match YouTube video ID (11 chars) in common URL forms. Slashes escaped for use with / delimiter. */
+    private const YOUTUBE_ID_REGEX = '(?:(?:www\.)?youtube\.com\/(?:watch\?(?:[^&]*&)*v=|embed\/|v\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})';
     /** Fallback: video id after youtube / youtu.be in any form. */
     private const YOUTUBE_ID_FALLBACK = '(?:youtube|youtu\.be)[^a-zA-Z0-9_-]*([a-zA-Z0-9_-]{11})';
 
