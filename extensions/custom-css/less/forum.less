@@ -81,12 +81,26 @@
     padding-bottom: unset;
     padding-right: 3rem;
     order: 1;
+
+    &:after {
+      content: "";
+      display: block;
+      position: absolute;
+      top: 3.25rem;
+      left: -1rem;
+      right: -1rem;
+      bottom: -1rem;
+      z-index: 1;
+    }
   }
 
   .DiscussionListItem-badges {
     position: absolute;
-    bottom: -8px;
-    left: 0;
+    bottom: unset;
+    left: unset;
+    top: 1.5rem;
+    right: 2.5rem;
+    margin-top: unset;
     margin-left: unset;
     width: unset;
     z-index: 1;
@@ -157,6 +171,10 @@
 
   .DiscussionListItem .DiscussionListItem-count {
     margin-right: unset;
+    top: 1rem;
+  }
+
+  .DiscussionListItem .DiscussionListItem-badges {
     top: 1rem;
   }
 }
