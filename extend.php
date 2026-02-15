@@ -16,7 +16,11 @@ use App\Access\AllowLikePolicy;
 use App\Extend\UseBasicPostSerializerNoRenderLog;
 use App\Extend\WrapFormatterWithParseBeforeRender;
 use App\Formatter\NormalizeUplImagePreviewBbcode;
+use App\Api\SetYoutubeDiscussionThumbnailAttribute;
 use App\Listeners\NormalizeFofUploadMethodToAwsS3;
+use App\Listeners\SetDiscussionThumbnailFromYoutube;
+use Flarum\Post\Event\Posted;
+use Flarum\Post\Event\Revised;
 use FoF\Upload\Events\File\WillBeSaved;
 use Flarum\Post\CommentPost;
 use Flarum\Post\Post;
@@ -39,7 +43,9 @@ return [
 
     // FoF sets upload_method from class name (AwsS3 → "awss3"); we use key "aws-s3", so normalize before save
     (new Extend\Event())
-        ->listen(WillBeSaved::class, NormalizeFofUploadMethodToAwsS3::class),
+        ->listen(WillBeSaved::class, NormalizeFofUploadMethodToAwsS3::class)
+        ->listen(Posted::class, SetDiscussionThumbnailFromYoutube::class)
+        ->listen(Revised::class, SetDiscussionThumbnailFromYoutube::class),
 
     // Parse raw BBCode before render so posts with stored BBCode (e.g. [upl-image-preview]) display correctly
     new WrapFormatterWithParseBeforeRender(),
@@ -59,6 +65,10 @@ return [
         ->default('fof-upload.awsS3Acl', env('FOF_UPLOAD_AWS_S3_ACL', 'public-read'))
         ->default('fof-upload.awsS3CustomUrl', env('FOF_UPLOAD_AWS_S3_CUSTOM_URL', '')),
 
+    // Same as FoF Discussion Thumbnail: set customThumbnail. We run after FoF (DiscussionSerializer); if FoF left it empty and first post has YouTube, we set it here so it works regardless of cache.
+    (new Extend\ApiSerializer(\Flarum\Api\Serializer\DiscussionSerializer::class))
+        ->attribute('customThumbnail', SetYoutubeDiscussionThumbnailAttribute::class),
+
     // Expose canLike and likesCount on firstPost/lastPost (they use BasicPostSerializer)
     (new Extend\ApiSerializer(BasicPostSerializer::class))
         ->attributes(function ($serializer, $post) {
@@ -68,8 +78,9 @@ return [
             ];
         }),
 
-    // Allow firstPost.likes on discussions list and load like count for firstPost
+    // Allow firstPost.likes on discussions list and load like count for firstPost; include firstPost so YouTube thumbnail can be set
     (new Extend\ApiController(ListDiscussionsController::class))
+        ->addInclude('firstPost')
         ->addInclude('firstPost.likes')
         ->loadWhere('firstPost.likes', [LoadLikesRelationship::class, 'mutateRelation'])
         ->prepareDataForSerialization(function ($controller, $data) {
