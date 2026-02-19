@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2e63dbe9bad8bd2989d2fda8b99eaa35",
+    "content-hash": "466f53565e32e31d7fbd77f750446bfb",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -522,6 +522,42 @@
                 "MIT"
             ],
             "description": "Add your own CSS/Less files to customize the forum (discussions list, pages, etc.)",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "commently/custom-frontend",
+            "version": "1.0.0",
+            "dist": {
+                "type": "path",
+                "url": "extensions/custom-frontend",
+                "reference": "98dcb0dddbcc5afffd4cdb9fe9f4c676c2bca7ac"
+            },
+            "require": {
+                "flarum/core": "^1.8"
+            },
+            "type": "flarum-extension",
+            "extra": {
+                "flarum-extension": {
+                    "title": "Custom Frontend",
+                    "category": "feature",
+                    "icon": {
+                        "name": "fas fa-paint-brush",
+                        "backgroundColor": "#0ea5e9",
+                        "color": "#fff"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Commently\\CustomFrontend\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Custom forum frontend with Discussions and Posts controllers, Turbo-ready",
             "transport-options": {
                 "relative": true
             }
