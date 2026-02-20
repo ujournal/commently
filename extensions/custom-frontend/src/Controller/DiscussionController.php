@@ -48,6 +48,7 @@ class DiscussionController
             'filter' => $filters,
             'page' => ['offset' => ($page - 1) * 20, 'limit' => 20],
         ];
+
         if ($q) {
             $params['filter']['q'] = $q;
         }
@@ -95,11 +96,13 @@ class DiscussionController
         };
 
         $posts = [];
+
         foreach ($apiDocument->included ?? [] as $resource) {
             if ($resource->type === 'posts' && isset($resource->attributes->contentHtml)) {
                 $posts[] = $resource;
             }
         }
+        
         usort($posts, fn ($a, $b) => ($a->attributes->number ?? 0) <=> ($b->attributes->number ?? 0));
 
         $commentCount = (int) ($apiDocument->data->attributes->commentCount ?? 0);
@@ -149,9 +152,10 @@ class DiscussionController
         $actor = RequestUtil::getActor($request);
 
         $title = $validated['title'];
+
         if ($title === null || $title === '') {
             $title = sprintf(
-                'Posted by @%s at %s',
+                'Discussion by @%s at %s',
                 $actor->username,
                 Carbon::now()->format('Y-m-d H:i')
             );

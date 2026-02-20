@@ -4,6 +4,7 @@ namespace Commently\CustomFrontend;
 
 use Commently\CustomFrontend\Controller\DiscussionController;
 use Commently\CustomFrontend\Controller\PostController;
+use Flarum\Extension\ExtensionManager;
 use Flarum\Http\RouteCollection;
 use Flarum\Http\RouteHandlerFactory;
 use Illuminate\Contracts\Container\Container;
@@ -16,6 +17,24 @@ use Psr\Http\Message\ServerRequestInterface as Request;
  */
 class ForumRoutesServiceProvider extends BaseServiceProvider
 {
+    public const EXTENSION_ID = 'commently-custom-frontend';
+
+    public function boot(): void
+    {
+        $this->app->make('view')->composer('custom-frontend::layout', function ($view): void {
+            $extensions = $this->app->make(ExtensionManager::class);
+            $extension = $extensions->getExtension(self::EXTENSION_ID);
+            if (!$extension) {
+                $view->with('customFrontendAsset', fn (string $path): string => '');
+                return;
+            }
+            $disk = $this->app->make('filesystem')->disk('flarum-assets');
+            $view->with('customFrontendAsset', function (string $path) use ($disk, $extension): string {
+                return $disk->url('extensions/'.$extension->getId().'/'.ltrim($path, '/'));
+            });
+        });
+    }
+
     public function register(): void
     {
         $this->app->afterResolving('flarum.forum.routes', function (RouteCollection $routes, Container $container) {

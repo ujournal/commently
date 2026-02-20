@@ -37,6 +37,7 @@ class PostController
     public function store(Request $request): ResponseInterface
     {
         $discussionId = $request->getQueryParams()['id'] ?? null;
+        
         if ($discussionId === null || $discussionId === '') {
             throw new \InvalidArgumentException('Discussion id is required');
         }
@@ -66,12 +67,14 @@ class PostController
             ->post('/posts');
 
         $bodyContents = $response->getBody()->getContents();
+
         if ($response->getStatusCode() !== 201) {
             throw new \RuntimeException('Failed to create post: ' . $bodyContents);
         }
 
         $data = json_decode($bodyContents, true);
         $postId = $data['data']['id'] ?? null;
+
         if (!$postId) {
             throw new \RuntimeException('Create post response missing post id');
         }

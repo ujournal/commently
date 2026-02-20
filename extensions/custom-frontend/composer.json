@@ -5,7 +5,8 @@
     "version": "1.0.0",
     "license": "MIT",
     "require": {
-        "flarum/core": "^1.8"
+        "flarum/core": "^1.8",
+        "hotwired-laravel/turbo-laravel": "^1.12"
     },
     "autoload": {
         "psr-4": {

@@ -8,9 +8,9 @@
     <p><a href="{{ $url->to('forum')->route('custom-frontend.discussions.create.page') }}" data-turbo="true">Start a discussion</a></p>
 
     @if (isset($apiDocument->data) && count($apiDocument->data) > 0)
-        <ul>
+        <ul class="discussion-list">
             @foreach ($apiDocument->data as $discussion)
-                <li>
+                <li class="discussion-item">
                     <a href="{{ $url->to('forum')->route('custom-frontend.discussion', ['id' => $discussion->id]) }}" data-turbo="true">
                         {{ $discussion->attributes->title ?? 'Discussion #' . $discussion->id }}
                     </a>
