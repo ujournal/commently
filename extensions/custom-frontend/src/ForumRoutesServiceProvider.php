@@ -53,6 +53,7 @@ class ForumRoutesServiceProvider extends BaseServiceProvider
             };
 
             $routes->get('/', 'custom-frontend.index', $toAction(DiscussionController::class, 'index'));
+            $routes->post('/discussions/tag-subscriptions', 'custom-frontend.discussions.tag-subscriptions', $toAction(DiscussionController::class, 'updateTagSubscriptions'));
             $routes->get('/discussions/create', 'custom-frontend.discussions.create.page', $toAction(DiscussionController::class, 'create'));
             $routes->get('/discussions/{id}', 'custom-frontend.discussion', $toAction(DiscussionController::class, 'show'));
             $routes->get('/posts/{id}', 'custom-frontend.post', $toAction(PostController::class, 'show'));

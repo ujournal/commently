@@ -36,6 +36,17 @@ class DiscussionController
         $q = Arr::pull($queryParams, 'q');
         $page = max(1, (int) Arr::pull($queryParams, 'page'));
         $filters = Arr::pull($queryParams, 'filter', []);
+        $tagParam = Arr::pull($queryParams, 'tag');
+
+        $primaryTags = $this->getPrimaryTags($request);
+        $subscribedTagSlugs = $this->getSubscribedTagSlugs($request);
+        $subscriptionApiAvailable = $this->isTagSubscriptionsApiAvailable($request);
+
+        // Filter slugs: URL ?tag=slug1,slug2 overrides; otherwise use subscribed tags
+        $filterSlugs = $this->parseTagFilter($tagParam);
+        if ($filterSlugs === []) {
+            $filterSlugs = $subscribedTagSlugs;
+        }
 
         $sortMap = [
             'latest' => '-lastPostedAt',
@@ -47,20 +58,63 @@ class DiscussionController
             'sort' => $sort && isset($sortMap[$sort]) ? $sortMap[$sort] : '-lastPostedAt',
             'filter' => $filters,
             'page' => ['offset' => ($page - 1) * 20, 'limit' => 20],
+            'include' => 'user,tags,firstPost',
         ];
 
         if ($q) {
             $params['filter']['q'] = $q;
         }
+        if ($filterSlugs !== []) {
+            $params['filter']['tag'] = implode(',', $filterSlugs);
+        }
 
         $apiDocument = $this->getApiDocument($request, $params);
         $hasNextPage = isset($apiDocument->links->next);
+
+        $getResource = function ($link) use ($apiDocument) {
+            return Arr::first($apiDocument->included ?? [], function ($value) use ($link) {
+                return $value->type === $link->type && $value->id === (string) $link->id;
+            });
+        };
+
+        $getDiscussionExcerpt = function ($discussion) use ($getResource): ?string {
+            $firstPostLink = $discussion->relationships->firstPost->data ?? null;
+            if (! $firstPostLink) {
+                return null;
+            }
+            $post = $getResource($firstPostLink);
+            if (! $post) {
+                return null;
+            }
+            $contentHtml = $post->attributes->contentHtml ?? '';
+            if ($contentHtml === '') {
+                return null;
+            }
+            $text = trim(strip_tags($contentHtml));
+            if ($text === '') {
+                return null;
+            }
+            $firstParagraph = trim((array_values(preg_split('/\s*\n\s*\n\s*/u', $text, 2)))[0] ?? $text);
+            $trimmed = preg_replace('/[^\p{L}]+$/u', '', $firstParagraph);
+            $excerpt = $trimmed . '...';
+            return mb_strlen($excerpt) >= 30 ? $excerpt : null;
+        };
+
+        $session = $request->getAttribute('session');
+        $csrfToken = $session ? $session->token() : '';
 
         return $this->response('custom-frontend::discussions.index', [
             'apiDocument' => $apiDocument,
             'page' => $page,
             'hasNextPage' => $hasNextPage,
             'url' => $this->url,
+            'getResource' => $getResource,
+            'getDiscussionExcerpt' => $getDiscussionExcerpt,
+            'primaryTags' => $primaryTags,
+            'subscribedTagSlugs' => $subscribedTagSlugs,
+            'filterSlugs' => $filterSlugs,
+            'subscriptionApiAvailable' => $subscriptionApiAvailable,
+            'csrfToken' => $csrfToken,
         ]);
     }
 
@@ -131,14 +185,40 @@ class DiscussionController
         ]);
     }
 
+    public function updateTagSubscriptions(Request $request): ResponseInterface
+    {
+        $data = $request->getParsedBody() ?? [];
+        $tagSlugs = $data['tag_slugs'] ?? $data['tag_slugs'] ?? [];
+        if (! is_array($tagSlugs)) {
+            $tagSlugs = $tagSlugs !== '' ? [trim((string) $tagSlugs)] : [];
+        } else {
+            $tagSlugs = array_values(array_filter(array_map('trim', $tagSlugs), fn ($s) => $s !== ''));
+        }
+
+        $response = $this->api
+            ->withParentRequest($request)
+            ->withBody(['slugs' => $tagSlugs])
+            ->put('/tag-subscriptions');
+
+        $indexUrl = $this->url->to('forum')->route('custom-frontend.index');
+        if ($response->getStatusCode() !== 200 && $tagSlugs !== []) {
+            $indexUrl .= '?tag=' . implode(',', array_map('urlencode', $tagSlugs));
+        }
+
+        return new RedirectResponse($indexUrl);
+    }
+
     public function create(Request $request): ResponseInterface
     {
         $session = $request->getAttribute('session');
         $csrfToken = $session ? $session->token() : '';
 
+        $tagsForSelect = $this->getTagsForDiscussionCreate($request);
+
         $html = $this->view->make('custom-frontend::discussions.create', [
             'url' => $this->url,
             'csrfToken' => $csrfToken,
+            'tagsForSelect' => $tagsForSelect,
         ])->render();
 
         return new HtmlResponse($html, 200, [
@@ -161,15 +241,26 @@ class DiscussionController
             );
         }
 
-        $body = [
-            'data' => [
-                'type' => 'discussions',
-                'attributes' => [
-                    'title' => $title,
-                    'content' => $validated['content'],
-                ],
+        $data = [
+            'type' => 'discussions',
+            'attributes' => [
+                'title' => $title,
+                'content' => $validated['content'],
             ],
         ];
+
+        if (!empty($validated['tag_ids'])) {
+            $data['relationships'] = [
+                'tags' => [
+                    'data' => array_map(
+                        fn ($id) => ['type' => 'tags', 'id' => (string) $id],
+                        $validated['tag_ids']
+                    ),
+                ],
+            ];
+        }
+
+        $body = ['data' => $data];
 
         $response = $this->api
             ->withParentRequest($request)
@@ -190,6 +281,113 @@ class DiscussionController
         $discussionUrl = $this->url->to('forum')->route('custom-frontend.discussion', ['id' => $id]);
 
         return new RedirectResponse($discussionUrl);
+    }
+
+    /**
+     * Tags the user can select when starting a discussion (canStartDiscussion).
+     * Returns primary tags first, then children, with canStartDiscussion true.
+     *
+     * @return list<array{id: string, type: string, attributes: array}>
+     */
+    protected function getTagsForDiscussionCreate(Request $request): array
+    {
+        $response = $this->api
+            ->withParentRequest($request)
+            ->get('/tags');
+
+        if ($response->getStatusCode() !== 200) {
+            return [];
+        }
+
+        $document = json_decode($response->getBody()->getContents(), true);
+        $data = $document['data'] ?? [];
+
+        $canStart = array_filter($data, function ($resource) {
+            $attrs = $resource['attributes'] ?? [];
+            return !empty($attrs['canStartDiscussion'] ?? false);
+        });
+
+        // Sort: primary first (by position), then children under their parent
+        usort($canStart, function ($a, $b) {
+            $aAttrs = $a['attributes'] ?? [];
+            $bAttrs = $b['attributes'] ?? [];
+            $aParent = $aAttrs['isChild'] ?? false;
+            $bParent = $bAttrs['isChild'] ?? false;
+            if ($aParent !== $bParent) {
+                return $aParent ? 1 : -1;
+            }
+            $aPos = $aAttrs['position'] ?? 0;
+            $bPos = $bAttrs['position'] ?? 0;
+            return ($aPos <=> $bPos) ?: (($a['id'] ?? '') <=> ($b['id'] ?? ''));
+        });
+
+        return array_values($canStart);
+    }
+
+    /**
+     * Primary tags (top-level, no parent) for the feed filter checkboxes.
+     *
+     * @return list<object{id: string, type: string, attributes: object}>
+     */
+    protected function getPrimaryTags(Request $request): array
+    {
+        $response = $this->api
+            ->withParentRequest($request)
+            ->get('/tags');
+
+        if ($response->getStatusCode() !== 200) {
+            return [];
+        }
+
+        $document = json_decode($response->getBody()->getContents(), true);
+        $data = $document['data'] ?? [];
+
+        return array_values(array_filter($data, function ($resource) {
+            $attrs = $resource['attributes'] ?? [];
+            return empty($attrs['isChild'] ?? true);
+        }));
+    }
+
+    /**
+     * Tag slugs the current user is subscribed to (from tag-subscriptions API).
+     * Returns [] if API is not available or user is guest.
+     *
+     * @return string[]
+     */
+    protected function getSubscribedTagSlugs(Request $request): array
+    {
+        $response = $this->api->withParentRequest($request)->get('/tag-subscriptions');
+
+        if ($response->getStatusCode() !== 200) {
+            return [];
+        }
+
+        $body = json_decode($response->getBody()->getContents(), true);
+
+        return is_array($body['slugs'] ?? null) ? $body['slugs'] : [];
+    }
+
+    protected function isTagSubscriptionsApiAvailable(Request $request): bool
+    {
+        $response = $this->api->withParentRequest($request)->get('/tag-subscriptions');
+
+        return $response->getStatusCode() === 200;
+    }
+
+    /**
+     * Parse ?tag=slug or ?tag=slug1,slug2 into array of slugs.
+     *
+     * @return string[]
+     */
+    protected function parseTagFilter(?string $tagParam): array
+    {
+        if ($tagParam === null || $tagParam === '') {
+            return [];
+        }
+
+        $slugs = array_map('trim', explode(',', $tagParam));
+
+        return array_values(array_filter($slugs, fn ($s) => $s !== ''));
     }
 
     protected function getApiDocument(Request $request, array $params): object

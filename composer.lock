@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "466f53565e32e31d7fbd77f750446bfb",
+    "content-hash": "082ba41914b8d321967f07ab1fa28dfe",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -632,6 +632,43 @@
                 "MIT"
             ],
             "description": "Allow sorting discussions by total post likes (API only)",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "commently/tag-subscriptions",
+            "version": "1.0.0",
+            "dist": {
+                "type": "path",
+                "url": "extensions/tag-subscriptions",
+                "reference": "59a0e0a902d2d31b3fd7fc781c05f0c5c712d446"
+            },
+            "require": {
+                "flarum/core": "^1.8",
+                "flarum/tags": "^1.8"
+            },
+            "type": "flarum-extension",
+            "extra": {
+                "flarum-extension": {
+                    "title": "Tag Subscriptions",
+                    "category": "feature",
+                    "icon": {
+                        "name": "fas fa-bookmark",
+                        "backgroundColor": "#3b82f6",
+                        "color": "#fff"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Commently\\TagSubscriptions\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "API for subscribing to tags; integrates with custom-frontend feed filter",
             "transport-options": {
                 "relative": true
             }

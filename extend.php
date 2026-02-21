@@ -16,6 +16,7 @@ use App\Access\AllowLikePolicy;
 use App\Extend\UseBasicPostSerializerNoRenderLog;
 use App\Extend\WrapFormatterWithParseBeforeRender;
 use App\Formatter\NormalizeUplImagePreviewBbcode;
+use App\Api\GetDiscussionThumbnailDimensions;
 use App\Api\SetYoutubeDiscussionThumbnailAttribute;
 use App\Listeners\NormalizeFofUploadMethodToAwsS3;
 use App\Listeners\SetDiscussionThumbnailFromYoutube;
@@ -67,7 +68,13 @@ return [
 
     // Same as FoF Discussion Thumbnail: set customThumbnail. We run after FoF (DiscussionSerializer); if FoF left it empty and first post has YouTube, we set it here so it works regardless of cache.
     (new Extend\ApiSerializer(\Flarum\Api\Serializer\DiscussionSerializer::class))
-        ->attribute('customThumbnail', SetYoutubeDiscussionThumbnailAttribute::class),
+        ->attribute('customThumbnail', SetYoutubeDiscussionThumbnailAttribute::class)
+        ->attribute('customThumbnailWidth', function ($serializer, $discussion, $attributes) {
+            return GetDiscussionThumbnailDimensions::get($discussion, $attributes['customThumbnail'] ?? null)['width'];
+        })
+        ->attribute('customThumbnailHeight', function ($serializer, $discussion, $attributes) {
+            return GetDiscussionThumbnailDimensions::get($discussion, $attributes['customThumbnail'] ?? null)['height'];
+        }),
 
     // Expose canLike and likesCount on firstPost/lastPost (they use BasicPostSerializer)
     (new Extend\ApiSerializer(BasicPostSerializer::class))
@@ -87,6 +94,7 @@ return [
             if ($data instanceof Collection) {
                 foreach ($data->pluck('firstPost')->filter() as $post) {
                     $post->loadCount('likes');
+                    $post->load('uploadFiles');
                 }
             }
         }),

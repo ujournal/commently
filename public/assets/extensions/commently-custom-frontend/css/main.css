@@ -48,3 +48,162 @@ a {
   margin-inline: -1rem;
   padding: 1rem;
 }
+
+.discussion-item-link {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.discussion-item-thumbnail-container {
+  width: 6rem;
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.discussion-item-thumbnail {
+  max-width: 6rem;
+  max-height: 6rem;
+  width: auto;
+  height: auto;
+  object-fit: cover;
+  display: block;
+  object-fit: cover;
+  vertical-align: middle;
+}
+
+.discussion-item-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.discussion-item-title {
+  margin: 0 0 0.25rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.discussion-item-excerpt {
+  margin: 0 0 0.35rem 0;
+  font-size: 0.875rem;
+  color: #555;
+  line-height: 1.4;
+}
+
+.discussion-item-meta {
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.discussion-item-user {
+  font-weight: 500;
+}
+
+.discussion-item-tag-sep {
+  color: #999;
+}
+
+/* Primary tag filters (subscribe to topics for feed) */
+.discussion-tag-filters {
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  background-color: #fff;
+  border-radius: 0.5rem;
+  margin-inline: -1rem;
+}
+
+.discussion-tag-filters-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+}
+
+.discussion-tag-filters-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #555;
+}
+
+.discussion-tag-filters-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+}
+
+.discussion-tag-filter-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.discussion-tag-filter-item input {
+  margin: 0;
+}
+
+.discussion-tag-filter-name {
+  color: #333;
+}
+
+.discussion-tag-filters-save {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.875rem;
+  background-color: #0ea5e9;
+  color: #fff;
+  border: none;
+  border-radius: 0.35rem;
+  cursor: pointer;
+}
+
+.discussion-tag-filters-save:hover {
+  background-color: #0284c7;
+}
+
+.discussion-tag-filters-hint {
+  margin: 0.5rem 0 0;
+  font-size: 0.8125rem;
+  color: #666;
+}
+
+/* New Discussion form: tag selection */
+.discussion-create-tags {
+  margin: 1rem 0;
+}
+
+.discussion-create-tags-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #555;
+}
+
+.discussion-create-tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+  margin-top: 0.35rem;
+}
+
+.discussion-create-tag-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.discussion-create-tag-item input {
+  margin: 0;
+}
+
+.discussion-create-tag-child {
+  margin-left: 1rem;
+}
+
+.discussion-create-tag-name {
+  color: #333;
+}

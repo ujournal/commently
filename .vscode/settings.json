@@ -1,3 +1,11 @@
 {
-  "cSpell.words": ["Commently", "Diactoros", "endsection", "Flarum"]
+  "cSpell.words": [
+    "Commently",
+    "Diactoros",
+    "endforeach",
+    "endphp",
+    "endsection",
+    "Flarum",
+    "isset"
+  ]
 }

@@ -77,13 +77,15 @@ class SetDiscussionThumbnailFromYoutube
             return;
         }
 
-        // Download video cover and upload via S3 driver
+        // Download video cover (maxresdefault = 16:9, no letterboxing), resize to 640px width, upload via S3
         $tempPath = $this->downloadYoutubeCoverToTemp($videoId);
         if (! $tempPath) {
             $this->cache->forget($key);
             $this->cache->forget(SetYoutubeDiscussionThumbnailAttribute::CACHE_KEY_PREFIX . $post->id);
             return;
         }
+
+        $this->resizeToMaxWidth($tempPath, 640);
 
         try {
             $this->uploadCoverViaS3AndSetCache($post, $videoId, $tempPath, $key);
@@ -201,13 +203,21 @@ class SetDiscussionThumbnailFromYoutube
         return null;
     }
 
-    private function getYoutubeCoverUrl(string $videoId, bool $preferMaxRes = true): string
+    /** maxresdefault = 1280×720 (16:9, no letterboxing). Fallback when not available: hqdefault. */
+    private const YOUTUBE_COVER_SUFFIX_PRIMARY = 'maxresdefault';
+    private const YOUTUBE_COVER_SUFFIX_FALLBACK = 'hqdefault';
+
+    private function getYoutubeCoverUrl(string $videoId, bool $usePrimary = true): string
     {
-        $suffix = $preferMaxRes ? 'maxresdefault' : 'hqdefault';
+        $suffix = $usePrimary ? self::YOUTUBE_COVER_SUFFIX_PRIMARY : self::YOUTUBE_COVER_SUFFIX_FALLBACK;
         return "https://img.youtube.com/vi/{$videoId}/{$suffix}.jpg";
     }
 
-    /** Download YouTube video cover (thumbnail) to a temp file. */
+    /** YouTube serves a 120×90 letterboxed placeholder when a size is not available. */
+    private const YOUTUBE_PLACEHOLDER_WIDTH = 120;
+    private const YOUTUBE_PLACEHOLDER_HEIGHT = 90;
+
+    /** Download YouTube video cover to a temp file. Prefers maxresdefault (16:9); if placeholder, falls back to hqdefault. */
     private function downloadYoutubeCoverToTemp(string $videoId): ?string
     {
         $tempPath = @tempnam(sys_get_temp_dir(), 'commently-yt-thumb.');
@@ -228,8 +238,23 @@ class SetDiscussionThumbnailFromYoutube
         if ($data === false || strlen($data) < 100) {
             $url = $this->getYoutubeCoverUrl($videoId, false);
             $data = @file_get_contents($url, false, $context);
+        } elseif (@file_put_contents($tempPath, $data) !== false) {
+            $info = @getimagesize($tempPath);
+            if (
+                $info !== false
+                && (int) ($info[0] ?? 0) === self::YOUTUBE_PLACEHOLDER_WIDTH
+                && (int) ($info[1] ?? 0) === self::YOUTUBE_PLACEHOLDER_HEIGHT
+            ) {
+                @unlink($tempPath);
+                $url = $this->getYoutubeCoverUrl($videoId, false);
+                $data = @file_get_contents($url, false, $context);
+            }
         }
+
         if ($data === false || strlen($data) < 100) {
+            if (is_file($tempPath)) {
+                @unlink($tempPath);
+            }
             return null;
         }
         if (@file_put_contents($tempPath, $data) === false) {
@@ -237,5 +262,38 @@ class SetDiscussionThumbnailFromYoutube
             return null;
         }
         return $tempPath;
+    }
+
+    /** Resize image in place to max width (keeps aspect ratio). Uses GD; no-op if width already <= maxWidth or GD fails. */
+    private function resizeToMaxWidth(string $path, int $maxWidth): void
+    {
+        $info = @getimagesize($path);
+        if ($info === false || ($info[0] ?? 0) <= $maxWidth) {
+            return;
+        }
+        $w = (int) $info[0];
+        $h = (int) $info[1];
+        $newW = $maxWidth;
+        $newH = (int) round($h * ($maxWidth / $w));
+
+        $src = @imagecreatefromstring((string) file_get_contents($path));
+        if ($src === false) {
+            return;
+        }
+        $dst = @imagecreatetruecolor($newW, $newH);
+        if ($dst === false) {
+            imagedestroy($src);
+            return;
+        }
+        if (! @imagecopyresampled($dst, $src, 0, 0, 0, 0, $newW, $newH, $w, $h)) {
+            imagedestroy($src);
+            imagedestroy($dst);
+            return;
+        }
+        imagedestroy($src);
+        if (@imagejpeg($dst, $path, 88)) {
+            // nop
+        }
+        imagedestroy($dst);
     }
 }

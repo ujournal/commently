@@ -62,7 +62,7 @@ class SetYoutubeDiscussionThumbnailAttribute
         }
         $videoId = $this->extractYoutubeVideoIdFromPost($post);
         if ($videoId !== null) {
-            return "https://img.youtube.com/vi/{$videoId}/hqdefault.jpg";
+            return "https://img.youtube.com/vi/{$videoId}/maxresdefault.jpg";
         }
 
         return null;
