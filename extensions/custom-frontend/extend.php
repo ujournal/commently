@@ -11,4 +11,6 @@ return [
 
     (new Extend\View)
         ->namespace('custom-frontend', __DIR__.'/src/resources/views'),
+
+    (new Extend\Locales(__DIR__.'/locale')),
 ];

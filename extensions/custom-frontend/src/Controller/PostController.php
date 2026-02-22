@@ -10,6 +10,7 @@ use Laminas\Diactoros\Response\HtmlResponse;
 use Laminas\Diactoros\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Single controller for posts: show (single post page) and store (create reply in discussion).
@@ -19,7 +20,8 @@ class PostController
     public function __construct(
         protected ViewFactory $view,
         protected ApiClient $api,
-        protected UrlGenerator $url
+        protected UrlGenerator $url,
+        protected TranslatorInterface $translator
     ) {
     }
 
@@ -27,7 +29,10 @@ class PostController
     {
         $id = (int) ($request->getQueryParams()['id'] ?? 0);
 
-        $html = $this->view->make('custom-frontend::posts.show', ['id' => $id])->render();
+        $html = $this->view->make('custom-frontend::posts.show', [
+            'id' => $id,
+            'translator' => $this->translator,
+        ])->render();
 
         return new HtmlResponse($html, 200, [
             'Content-Type' => 'text/html; charset=utf-8',

@@ -1,9 +1,9 @@
 @extends('custom-frontend::layout')
 
-@section('title', $apiDocument->data->attributes->title ?? 'Discussion')
+@section('title', $apiDocument->data->attributes->title ?? $translator->trans('commently-custom-frontend.show.default_title'))
 
 @section('content')
-    <h1>{{ $apiDocument->data->attributes->title ?? 'Discussion' }}</h1>
+    <h1>{{ $apiDocument->data->attributes->title ?? $translator->trans('commently-custom-frontend.show.default_title') }}</h1>
 
     <div class="Discussion-posts">
         @foreach ($posts as $post)
@@ -23,21 +23,21 @@
     </div>
 
     @if ($hasPrevPage)
-        <a href="{{ $url(['page' => $page - 1]) }}" data-turbo="true">&laquo; Previous</a>
+        <a href="{{ $url(['page' => $page - 1]) }}" data-turbo="true">{{ $translator->trans('commently-custom-frontend.show.previous') }}</a>
     @endif
     @if ($hasNextPage)
-        <a href="{{ $url(['page' => $page + 1]) }}" data-turbo="true">Next &raquo;</a>
+        <a href="{{ $url(['page' => $page + 1]) }}" data-turbo="true">{{ $translator->trans('commently-custom-frontend.show.next') }}</a>
     @endif
 
-    <h2>Reply</h2>
+    <h2>{{ $translator->trans('commently-custom-frontend.show.reply_heading') }}</h2>
     <form method="post" action="{{ $replyUrl }}" data-turbo="false" class="Discussion-replyForm">
         <input type="hidden" name="csrfToken" value="{{ $csrfToken }}">
         <p>
-            <label for="reply-content">Your reply</label><br>
-            <textarea name="content" id="reply-content" rows="6" required placeholder="Write your reply…"></textarea>
+            <label for="reply-content">{{ $translator->trans('commently-custom-frontend.show.reply_label') }}</label><br>
+            <textarea name="content" id="reply-content" rows="6" required placeholder="{{ $translator->trans('commently-custom-frontend.show.reply_placeholder') }}"></textarea>
         </p>
         <p>
-            <button type="submit">Post Reply</button>
+            <button type="submit">{{ $translator->trans('commently-custom-frontend.show.post_reply') }}</button>
         </p>
     </form>
 @endsection

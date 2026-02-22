@@ -1,0 +1,42 @@
+commently-custom-frontend:
+
+  discussions:
+    title: Обговорення
+    write: Написати
+    toggle_filters: Показати фільтри
+    filter_hint: "Фільтр діє лише для цього відвідування. Увімкніть розширення Tag Subscriptions, щоб зберігати обрані теми."
+    no_discussions: Поки що немає обговорень.
+    replies: "{count} відповідей"
+    likes: "{count} вподобайок"
+    menu_aria: Меню
+    discussion_number: "Обговорення #{id}"
+    previous: "« Попередня"
+    next: "Наступна »"
+
+  create:
+    title: Нове обговорення
+    title_label: Заголовок
+    title_optional: "(необов'язково)"
+    title_placeholder: "Залиште порожнім для «Опубліковано @username, дата»"
+    tags_label: Теги
+    content_label: Зміст
+    content_required: "(обов'язково)"
+    content_placeholder: "Напишіть свій допис…"
+    submit: Опублікувати обговорення
+    back: "« Назад до обговорень"
+
+  show:
+    default_title: Обговорення
+    reply_heading: Відповідь
+    reply_label: Ваша відповідь
+    reply_placeholder: "Напишіть відповідь…"
+    post_reply: Опублікувати відповідь
+    previous: "« Попередня"
+    next: "Наступна »"
+
+  layout:
+    default_title: Форум
+
+  post:
+    title: "Допис #{id}"
+    custom_view: Сторінка допису.

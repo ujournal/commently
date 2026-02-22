@@ -1,24 +1,24 @@
 @extends('custom-frontend::layout')
 
-@section('title', 'Discussions')
+@section('title', $translator->trans('commently-custom-frontend.discussions.title'))
 
 @section('content')
     <div class="discussions-header">
-        <h1 class="discussions-title">Discussions</h1>
+        <h1 class="discussions-title">{{ $translator->trans('commently-custom-frontend.discussions.title') }}</h1>
         <div class="discussions-header-actions">
             @if (count($primaryTags ?? []) > 0)
-                <button type="button" class="discussions-filter-btn" aria-label="Toggle filters" aria-expanded="false" aria-controls="discussion-tag-filters" title="Toggle filters">
+                <button type="button" class="discussions-filter-btn" aria-label="{{ $translator->trans('commently-custom-frontend.discussions.toggle_filters') }}" aria-expanded="false" aria-controls="discussion-tag-filters" title="{{ $translator->trans('commently-custom-frontend.discussions.toggle_filters') }}">
                     <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="M400-240v-80h160v80H400ZM240-440v-80h480v80H240ZM120-640v-80h720v80H120Z"/></svg>
                 </button>
             @endif
-            <a href="{{ $url->to('forum')->route('custom-frontend.discussions.create.page') }}" class="discussions-start-btn" id="discussions-header-write" data-turbo="true">
+                <a href="{{ $url->to('forum')->route('custom-frontend.discussions.create.page') }}" class="discussions-start-btn" id="discussions-header-write" data-turbo="true">
                 <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="m499-287 335-335-52-52-335 335 52 52Zm-261 87q-100-5-149-42T40-349q0-65 53.5-105.5T242-503q39-3 58.5-12.5T320-542q0-26-29.5-39T193-600l7-80q103 8 151.5 41.5T400-542q0 53-38.5 83T248-423q-64 5-96 23.5T120-349q0 35 28 50.5t94 18.5l-4 80Zm280 7L353-358l382-382q20-20 47.5-20t47.5 20l70 70q20 20 20 47.5T900-575L518-193Zm-159 33q-17 4-30-9t-9-30l33-159 165 165-159 33Z"/></svg>
-                <span>Write</span>
+                <span>{{ $translator->trans('commently-custom-frontend.discussions.write') }}</span>
             </a>
         </div>
     </div>
 
-    <a href="{{ $url->to('forum')->route('custom-frontend.discussions.create.page') }}" class="discussions-start-btn discussions-start-btn-floating" id="discussions-write-floating" aria-label="Write" data-turbo="true" hidden>
+    <a href="{{ $url->to('forum')->route('custom-frontend.discussions.create.page') }}" class="discussions-start-btn discussions-start-btn-floating" id="discussions-write-floating" aria-label="{{ $translator->trans('commently-custom-frontend.discussions.write') }}" data-turbo="true" hidden>
         <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="m499-287 335-335-52-52-335 335 52 52Zm-261 87q-100-5-149-42T40-349q0-65 53.5-105.5T242-503q39-3 58.5-12.5T320-542q0-26-29.5-39T193-600l7-80q103 8 151.5 41.5T400-542q0 53-38.5 83T248-423q-64 5-96 23.5T120-349q0 35 28 50.5t94 18.5l-4 80Zm280 7L353-358l382-382q20-20 47.5-20t47.5 20l70 70q20 20 20 47.5T900-575L518-193Zm-159 33q-17 4-30-9t-9-30l33-159 165 165-159 33Z"/></svg>
     </a>
 
@@ -51,7 +51,7 @@
                 })();
             </script>
             @if (!($subscriptionApiAvailable ?? false) && count($filterSlugs ?? []) > 0)
-                <p class="discussion-tag-filters-hint">Filter is applied for this visit. Enable the Tag Subscriptions extension to save your preferred topics.</p>
+                <p class="discussion-tag-filters-hint">{{ $translator->trans('commently-custom-frontend.discussions.filter_hint') }}</p>
             @endif
         </div>
         <script>
@@ -115,13 +115,13 @@
                                 </span>
                             </div>
                             <div class="discussion-item-body-inner">
-                                <h2 class="discussion-item-title">{{ $discussion->attributes->title ?? 'Discussion #' . $discussion->id }}</h2>
+                                <h2 class="discussion-item-title">{{ $discussion->attributes->title ?? $translator->trans('commently-custom-frontend.discussions.discussion_number', ['id' => $discussion->id]) }}</h2>
                                 @if ($excerpt)
                                     <p class="discussion-item-excerpt">{{ $excerpt }}</p>
                                 @endif
                             </div>
                             @if ($thumbnailUrl)
-                                <div class="discussion-item-thumbnail-container">
+                                <div class="discussion-item-thumbnail-container" style="--thumb-url: url('{{ str_replace("'", "\\'", e($thumbnailUrl)) }}')">
                                     <img src="{{ $thumbnailUrl }}" alt="" class="discussion-item-thumbnail" loading="lazy"
                                         @if ($thumbnailWidth) width="{{ $thumbnailWidth }}" @endif
                                         @if ($thumbnailHeight) height="{{ $thumbnailHeight }}" @endif>
@@ -129,10 +129,10 @@
                             @endif
                             <div class="discussion-item-meta">
                                 <span class="discussion-item-meta-counts">
-                                    <span class="discussion-item-comments-count">{{ (int) ($discussion->attributes->commentCount ?? 0) }} replies</span>
-                                    <span class="discussion-item-likes-count">{{ (int) ($discussion->attributes->likeCount ?? 0) }} likes</span>
+                                    <span class="discussion-item-comments-count">{{ $translator->trans('commently-custom-frontend.discussions.replies', ['count' => (int) ($discussion->attributes->commentCount ?? 0)]) }}</span>
+                                    <span class="discussion-item-likes-count">{{ $translator->trans('commently-custom-frontend.discussions.likes', ['count' => (int) ($discussion->attributes->likeCount ?? 0)]) }}</span>
                                 </span>
-                                <button type="button" class="discussion-item-menu-btn" aria-label="Menu" onclick="event.preventDefault(); event.stopPropagation();">
+                                <button type="button" class="discussion-item-menu-btn" aria-label="{{ $translator->trans('commently-custom-frontend.discussions.menu_aria') }}" onclick="event.preventDefault(); event.stopPropagation();">
                                     <svg class="discussion-item-menu-icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="currentColor">
                                         <circle cx="5" cy="12" r="2"/>
                                         <circle cx="12" cy="12" r="2"/>
@@ -147,13 +147,13 @@
         </ul>
 
         @if ($page > 1)
-            <a href="{{ $url->to('forum')->route('custom-frontend.index') }}?page={{ $page - 1 }}">&laquo; Previous</a>
+            <a href="{{ $url->to('forum')->route('custom-frontend.index') }}?page={{ $page - 1 }}">{{ $translator->trans('commently-custom-frontend.discussions.previous') }}</a>
         @endif
         @if (!empty($hasNextPage))
-            <a href="{{ $url->to('forum')->route('custom-frontend.index') }}?page={{ $page + 1 }}">Next &raquo;</a>
+            <a href="{{ $url->to('forum')->route('custom-frontend.index') }}?page={{ $page + 1 }}">{{ $translator->trans('commently-custom-frontend.discussions.next') }}</a>
         @endif
     @else
-        <p>No discussions yet.</p>
+        <p>{{ $translator->trans('commently-custom-frontend.discussions.no_discussions') }}</p>
     @endif
 
     <script>

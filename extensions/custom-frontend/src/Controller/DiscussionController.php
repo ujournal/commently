@@ -124,6 +124,7 @@ class DiscussionController
             'filterSlugs' => $filterSlugs,
             'subscriptionApiAvailable' => $subscriptionApiAvailable,
             'csrfToken' => $csrfToken,
+            'translator' => $this->translator,
         ]);
     }
 
@@ -228,6 +229,7 @@ class DiscussionController
             'url' => $this->url,
             'csrfToken' => $csrfToken,
             'tagsForSelect' => $tagsForSelect,
+            'translator' => $this->translator,
         ])->render();
 
         return new HtmlResponse($html, 200, [

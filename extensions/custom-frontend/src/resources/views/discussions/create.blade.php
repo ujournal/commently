@@ -1,19 +1,19 @@
 @extends('custom-frontend::layout')
 
-@section('title', 'New Discussion')
+@section('title', $translator->trans('commently-custom-frontend.create.title'))
 
 @section('content')
-    <h1>New Discussion</h1>
+    <h1>{{ $translator->trans('commently-custom-frontend.create.title') }}</h1>
 
     <form method="post" action="{{ $url->to('forum')->route('custom-frontend.discussions.create') }}" data-turbo="false">
         <input type="hidden" name="csrfToken" value="{{ $csrfToken }}">
         <p>
-            <label for="title">Title <em>(optional)</em></label><br>
-            <input type="text" name="title" id="title" maxlength="80" placeholder="Leave empty for “Posted by @username at date”">
+            <label for="title">{{ $translator->trans('commently-custom-frontend.create.title_label') }} <em>{{ $translator->trans('commently-custom-frontend.create.title_optional') }}</em></label><br>
+            <input type="text" name="title" id="title" maxlength="80" placeholder="{{ $translator->trans('commently-custom-frontend.create.title_placeholder') }}">
         </p>
         @if (count($tagsForSelect ?? []) > 0)
             <p class="discussion-create-tags">
-                <span class="discussion-create-tags-label">Tags</span><br>
+                <span class="discussion-create-tags-label">{{ $translator->trans('commently-custom-frontend.create.tags_label') }}</span><br>
                 <span class="discussion-create-tags-list">
                     @foreach ($tagsForSelect as $tag)
                         @php
@@ -30,13 +30,13 @@
             </p>
         @endif
         <p>
-            <label for="content">Content <strong>(required)</strong></label><br>
-            <textarea name="content" id="content" rows="8" required placeholder="Write your post…"></textarea>
+            <label for="content">{{ $translator->trans('commently-custom-frontend.create.content_label') }} <strong>{{ $translator->trans('commently-custom-frontend.create.content_required') }}</strong></label><br>
+            <textarea name="content" id="content" rows="8" required placeholder="{{ $translator->trans('commently-custom-frontend.create.content_placeholder') }}"></textarea>
         </p>
         <p>
-            <button type="submit">Post Discussion</button>
+            <button type="submit">{{ $translator->trans('commently-custom-frontend.create.submit') }}</button>
         </p>
     </form>
 
-    <p><a href="{{ $url->to('forum')->route('custom-frontend.index') }}" data-turbo="true">&laquo; Back to discussions</a></p>
+    <p><a href="{{ $url->to('forum')->route('custom-frontend.index') }}" data-turbo="true">{{ $translator->trans('commently-custom-frontend.create.back') }}</a></p>
 @endsection

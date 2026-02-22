@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ isset($translator) ? $translator->getLocale() : 'en' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Custom Frontend')</title>
+    <title>@yield('title', isset($translator) ? $translator->trans('commently-custom-frontend.layout.default_title') : 'Custom Frontend')</title>
     <link rel="stylesheet" href="{{ $customFrontendAsset('css/main.css') }}">
     @stack('styles')
     <script src="{{ $customFrontendAsset('js/turbo.js') }}" defer></script>
