@@ -8,9 +8,9 @@ commently-custom-frontend:
     filter_hint: "Фільтр діє лише для цього відвідування. Увімкніть розширення Tag Subscriptions, щоб зберігати обрані теми."
     no_discussions: Поки що немає обговорень.
     reply: Відповісти
-    reply_with_count: "{count} відповідей"
+    reply_with_count: "{count, plural, one {# відповідь} few {# відповіді} many {# відповідей} other {# відповіді}}"
     react: Подобається
-    react_with_count: "{count} вподобань"
+    react_with_count: "{count, plural, one {# вподобайка} few {# вподобайки} many {# вподобайок} other {# вподобайки}}"
     menu_aria: Меню
     discussion_number: "Обговорення #{id}"
     previous: "« Попередня"

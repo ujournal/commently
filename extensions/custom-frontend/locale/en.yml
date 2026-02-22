@@ -8,9 +8,9 @@ commently-custom-frontend:
     filter_hint: "Filter is applied for this visit. Enable the Tag Subscriptions extension to save your preferred topics."
     no_discussions: No discussions yet.
     reply: Reply
-    reply_with_count: "{count} replies"
+    reply_with_count: "{count, plural, one {# reply} other {# replies}}"
     react: Like
-    react_with_count: "{count} likes"
+    react_with_count: "{count, plural, one {# like} other {# likes}}"
     menu_aria: Menu
     discussion_number: "Discussion #{id}"
     previous: "« Previous"
