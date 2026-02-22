@@ -112,6 +112,17 @@ class DiscussionController
         $session = $request->getAttribute('session');
         $csrfToken = $session ? $session->token() : '';
 
+        $activeTagName = null;
+        if (count($filterSlugs) === 1) {
+            foreach ($primaryTags as $tag) {
+                $slug = $tag['attributes']['slug'] ?? (string) $tag['id'];
+                if ($slug === $filterSlugs[0]) {
+                    $activeTagName = $tag['attributes']['name'] ?? $filterSlugs[0];
+                    break;
+                }
+            }
+        }
+
         return $this->response('custom-frontend::discussions.index', [
             'apiDocument' => $apiDocument,
             'page' => $page,
@@ -122,6 +133,7 @@ class DiscussionController
             'primaryTags' => $primaryTags,
             'subscribedTagSlugs' => $subscribedTagSlugs,
             'filterSlugs' => $filterSlugs,
+            'activeTagName' => $activeTagName,
             'subscriptionApiAvailable' => $subscriptionApiAvailable,
             'csrfToken' => $csrfToken,
             'translator' => $this->translator,

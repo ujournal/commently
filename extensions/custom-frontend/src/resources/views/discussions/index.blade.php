@@ -1,10 +1,10 @@
 @extends('custom-frontend::layout')
 
-@section('title', $translator->trans('commently-custom-frontend.discussions.title'))
+@section('title', isset($activeTagName) ? $activeTagName . ' – ' . $translator->trans('commently-custom-frontend.discussions.title') : $translator->trans('commently-custom-frontend.discussions.title'))
 
 @section('content')
     <div class="discussions-header">
-        <h1 class="discussions-title">{{ $translator->trans('commently-custom-frontend.discussions.title') }}</h1>
+        <h1 class="discussions-title">{{ isset($activeTagName) ? $activeTagName : $translator->trans('commently-custom-frontend.discussions.title') }}</h1>
         <div class="discussions-header-actions">
             @if (count($primaryTags ?? []) > 0)
                 <button type="button" class="discussions-filter-btn" aria-label="{{ $translator->trans('commently-custom-frontend.discussions.toggle_filters') }}" aria-expanded="false" aria-controls="discussion-tag-filters" title="{{ $translator->trans('commently-custom-frontend.discussions.toggle_filters') }}">
@@ -129,8 +129,18 @@
                             @endif
                             <div class="discussion-item-meta">
                                 <span class="discussion-item-meta-counts">
-                                    <span class="discussion-item-comments-count">{{ $translator->trans('commently-custom-frontend.discussions.replies', ['count' => (int) ($discussion->attributes->commentCount ?? 0)]) }}</span>
-                                    <span class="discussion-item-likes-count">{{ $translator->trans('commently-custom-frontend.discussions.likes', ['count' => (int) ($discussion->attributes->likeCount ?? 0)]) }}</span>
+                                    @php
+                                        $replyCount = max(0, (int) ($discussion->attributes->commentCount ?? 0) - 1);
+                                        $reactionCount = (int) ($discussion->attributes->likeCount ?? 0);
+                                    @endphp
+                                    <span class="discussion-item-meta-count discussion-item-comments-count">
+                                        <svg class="discussion-item-meta-icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="currentColor"><path d="M21.99 4c0-1.1-.89-2-1.99-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4-.01-18z"/></svg>
+                                        <span>{{ $replyCount === 0 ? $translator->trans('commently-custom-frontend.discussions.reply') : $translator->trans('commently-custom-frontend.discussions.reply_with_count', ['count' => $replyCount]) }}</span>
+                                    </span>
+                                    <span class="discussion-item-meta-count discussion-item-reactions-count">
+                                        <svg class="discussion-item-meta-icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="currentColor"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg>
+                                        <span>{{ $reactionCount === 0 ? $translator->trans('commently-custom-frontend.discussions.react') : $translator->trans('commently-custom-frontend.discussions.react_with_count', ['count' => $reactionCount]) }}</span>
+                                    </span>
                                 </span>
                                 <button type="button" class="discussion-item-menu-btn" aria-label="{{ $translator->trans('commently-custom-frontend.discussions.menu_aria') }}" onclick="event.preventDefault(); event.stopPropagation();">
                                     <svg class="discussion-item-menu-icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="currentColor">

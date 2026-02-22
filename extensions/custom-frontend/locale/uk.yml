@@ -6,8 +6,10 @@ commently-custom-frontend:
     toggle_filters: Показати фільтри
     filter_hint: "Фільтр діє лише для цього відвідування. Увімкніть розширення Tag Subscriptions, щоб зберігати обрані теми."
     no_discussions: Поки що немає обговорень.
-    replies: "{count} відповідей"
-    likes: "{count} вподобайок"
+    reply: Відповісти
+    reply_with_count: "{count} відповідей"
+    react: Відреагувати
+    react_with_count: "{count} реакцій"
     menu_aria: Меню
     discussion_number: "Обговорення #{id}"
     previous: "« Попередня"

@@ -5,6 +5,9 @@ namespace Commently\CustomFrontend;
 use Flarum\Extend;
 
 return [
+    (new Extend\Frontend('forum'))
+        ->removeRoute('tags'),
+
     (new Extend\ServiceProvider)
         ->register(ForumRoutesServiceProvider::class)
         ->register(TurboServiceProvider::class),

@@ -9,6 +9,13 @@
     <script src="{{ $customFrontendAsset('js/turbo.js') }}" defer></script>
 </head>
 <body data-turbo="true">
+    @if(!empty($tagsFrameUrl ?? ''))
+    <nav class="nav-tags" aria-label="Tags">
+        <turbo-frame id="tags-frame" src="{{ $tagsFrameUrl }}" loading="lazy" data-turbo-permanent>
+            <span class="nav-tags-loading" aria-hidden="true">…</span>
+        </turbo-frame>
+    </nav>
+    @endif
     <main id="main">
         @yield('content')
     </main>

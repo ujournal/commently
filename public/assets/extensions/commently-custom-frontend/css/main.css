@@ -28,6 +28,56 @@ a {
   color: #1a1814;
 }
 
+/* Left nav: primary tags (turbo-frame), fixed, scrollable, no scrollbar */
+.nav-tags {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 12rem;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.nav-tags::-webkit-scrollbar {
+  display: none;
+}
+
+.nav-tags turbo-frame {
+  display: block;
+  min-height: 100%;
+}
+
+.nav-tags-list {
+  list-style: none;
+  margin: 0;
+  padding: 1rem 0.75rem;
+}
+
+.nav-tags-item {
+  margin: 0;
+  padding: 0;
+}
+
+.nav-tags-link {
+  display: block;
+  padding: 0.35rem 0;
+  font-size: 0.9375rem;
+  color: #38342e;
+}
+
+.nav-tags-link:hover {
+  color: #1a1814;
+}
+
+.nav-tags-loading {
+  display: block;
+  padding: 1rem 0.75rem;
+  font-size: 0.9375rem;
+  color: #6b6560;
+}
+
 #main {
   max-width: 40rem;
   margin-inline: auto;
@@ -64,7 +114,7 @@ a {
   padding: 0;
   font-size: 0.875rem;
   color: #38342e;
-  background: none;
+  background: rgba(255, 255, 255, 0.5);
   border: none;
   border-radius: 9999px;
   cursor: pointer;
@@ -315,11 +365,28 @@ a {
 }
 
 .discussion-item-meta-counts {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
   flex-shrink: 0;
 }
 
-.discussion-item-likes-count {
-  margin-left: 0.75rem;
+.discussion-item-meta-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  line-height: 1;
+}
+
+.discussion-item-meta-icon {
+  display: block;
+  flex-shrink: 0;
+  color: inherit;
+  vertical-align: middle;
+}
+
+.discussion-item-reactions-count {
+  margin-left: 0;
 }
 
 .discussion-item-menu-btn {

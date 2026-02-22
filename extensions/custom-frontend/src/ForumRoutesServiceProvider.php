@@ -4,7 +4,9 @@ namespace Commently\CustomFrontend;
 
 use Commently\CustomFrontend\Controller\DiscussionController;
 use Commently\CustomFrontend\Controller\PostController;
+use Commently\CustomFrontend\Controller\TagController;
 use Flarum\Extension\ExtensionManager;
+use Flarum\Http\UrlGenerator;
 use Flarum\Http\RouteCollection;
 use Flarum\Http\RouteHandlerFactory;
 use Illuminate\Contracts\Container\Container;
@@ -26,12 +28,15 @@ class ForumRoutesServiceProvider extends BaseServiceProvider
             $extension = $extensions->getExtension(self::EXTENSION_ID);
             if (!$extension) {
                 $view->with('customFrontendAsset', fn (string $path): string => '');
+                $view->with('tagsFrameUrl', '');
                 return;
             }
             $disk = $this->app->make('filesystem')->disk('flarum-assets');
             $view->with('customFrontendAsset', function (string $path) use ($disk, $extension): string {
                 return $disk->url('extensions/'.$extension->getId().'/'.ltrim($path, '/'));
             });
+            $url = $this->app->make(UrlGenerator::class);
+            $view->with('tagsFrameUrl', $url->to('forum')->route('custom-frontend.tags.index'));
         });
     }
 
@@ -53,6 +58,7 @@ class ForumRoutesServiceProvider extends BaseServiceProvider
             };
 
             $routes->get('/', 'custom-frontend.index', $toAction(DiscussionController::class, 'index'));
+            $routes->get('/tags', 'custom-frontend.tags.index', $toAction(TagController::class, 'index'));
             $routes->post('/discussions/tag-subscriptions', 'custom-frontend.discussions.tag-subscriptions', $toAction(DiscussionController::class, 'updateTagSubscriptions'));
             $routes->get('/discussions/create', 'custom-frontend.discussions.create.page', $toAction(DiscussionController::class, 'create'));
             $routes->get('/discussions/{id}', 'custom-frontend.discussion', $toAction(DiscussionController::class, 'show'));
