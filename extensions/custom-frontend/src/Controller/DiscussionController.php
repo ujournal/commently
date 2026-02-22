@@ -8,6 +8,7 @@ use Flarum\Api\Client as ApiClient;
 use Flarum\Http\Exception\RouteNotFoundException;
 use Flarum\Http\RequestUtil;
 use Flarum\Http\UrlGenerator;
+use Flarum\Settings\SettingsRepositoryInterface;
 use Illuminate\Contracts\View\Factory as ViewFactory;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
@@ -26,7 +27,8 @@ class DiscussionController
         protected ApiClient $api,
         protected ViewFactory $view,
         protected UrlGenerator $url,
-        protected TranslatorInterface $translator
+        protected TranslatorInterface $translator,
+        protected SettingsRepositoryInterface $settings
     ) {
     }
 
@@ -137,6 +139,7 @@ class DiscussionController
             'subscriptionApiAvailable' => $subscriptionApiAvailable,
             'csrfToken' => $csrfToken,
             'translator' => $this->translator,
+            'locale' => $this->settings->get('default_locale', 'en'),
         ]);
     }
 

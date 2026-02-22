@@ -2,6 +2,7 @@ commently-custom-frontend:
 
   discussions:
     title: Discussions
+    now: now
     write: Write
     toggle_filters: Toggle filters
     filter_hint: "Filter is applied for this visit. Enable the Tag Subscriptions extension to save your preferred topics."
@@ -25,6 +26,7 @@ commently-custom-frontend:
     content_required: "(required)"
     content_placeholder: "Write your post…"
     submit: Post Discussion
+    submitting: "Posting…"
     back: "« Back to discussions"
 
   show:

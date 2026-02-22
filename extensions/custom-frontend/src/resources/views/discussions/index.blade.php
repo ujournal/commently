@@ -75,6 +75,11 @@
                     $thumbnailUrl = $discussion->attributes->customThumbnail ?? null;
                     $thumbnailWidth = $discussion->attributes->customThumbnailWidth ?? null;
                     $thumbnailHeight = $discussion->attributes->customThumbnailHeight ?? null;
+                    $thumbAspect = ($thumbnailWidth && $thumbnailHeight && (float) $thumbnailHeight > 0)
+                        ? (float) $thumbnailWidth / (float) $thumbnailHeight
+                        : null;
+                    $isWideThumb = $thumbAspect !== null && $thumbAspect >= 1.5 && $thumbAspect <= 2.1; // square through 1.5 (3:2)
+                    $isTallThumb = $thumbAspect !== null && $thumbAspect <= 1; // vertical or square
                     $userLink = $discussion->relationships->user->data ?? null;
                     $user = $userLink ? $getResource($userLink) : null;
                     $tagLinks = isset($discussion->relationships->tags->data) ? (array) $discussion->relationships->tags->data : [];
@@ -95,11 +100,38 @@
                                     @if (!empty($discussion->attributes->createdAt))
                                         @php
                                             $createdAt = \Carbon\Carbon::parse($discussion->attributes->createdAt);
-                                            $dateFormat = $createdAt->lt(\Carbon\Carbon::now()->subYear()) ? 'M j, Y' : 'M j';
+                                            $dateLocale = $locale ?? 'en';
+                                            $createdAtLocalized = $createdAt->locale($dateLocale);
+                                            $lessThan5MinAgo = $createdAt->gt(\Carbon\Carbon::now()->subMinutes(5));
+                                            $lessThanHourAgo = $createdAt->gt(\Carbon\Carbon::now()->subHour());
                                         @endphp
                                         <span class="discussion-item-header-middot"> · </span>
                                         <span class="discussion-item-date">
-                                            {{ $createdAt->format($dateFormat) }}
+                                            @if ($lessThan5MinAgo)
+                                                {{ $translator->trans('commently-custom-frontend.discussions.now') }}
+                                            @elseif ($lessThanHourAgo)
+                                                {{ $createdAtLocalized->diffForHumans() }}
+                                            @else
+                                                @php
+                                                    $olderThanYear = $createdAt->lt(\Carbon\Carbon::now()->subYear());
+                                                    if ($olderThanYear) {
+                                                        $dateFmt = \IntlDateFormatter::create(
+                                                            $dateLocale,
+                                                            \IntlDateFormatter::SHORT,
+                                                            \IntlDateFormatter::NONE
+                                                        );
+                                                        if ($dateFmt) {
+                                                            $dateFmt->setTimezone($createdAt->getTimezone());
+                                                            $displayDate = $dateFmt->format($createdAt->getTimestamp());
+                                                        } else {
+                                                            $displayDate = $createdAtLocalized->translatedFormat('d.m.Y');
+                                                        }
+                                                    } else {
+                                                        $displayDate = $createdAtLocalized->translatedFormat('j F');
+                                                    }
+                                                @endphp
+                                                {{ $displayDate }}
+                                            @endif
                                         </span>
                                     @endif
                                 </span>
@@ -121,7 +153,7 @@
                                 @endif
                             </div>
                             @if ($thumbnailUrl)
-                                <div class="discussion-item-thumbnail-container" style="--thumb-url: url('{{ str_replace("'", "\\'", e($thumbnailUrl)) }}')">
+                                <div class="discussion-item-thumbnail-container {{ $isWideThumb ? 'discussion-item-thumbnail-container--wide' : '' }} {{ $isTallThumb ? 'discussion-item-thumbnail-container--tall' : '' }}" style="--thumb-url: url('{{ str_replace("'", "\\'", e($thumbnailUrl)) }}')">
                                     <img src="{{ $thumbnailUrl }}" alt="" class="discussion-item-thumbnail" loading="lazy"
                                         @if ($thumbnailWidth) width="{{ $thumbnailWidth }}" @endif
                                         @if ($thumbnailHeight) height="{{ $thumbnailHeight }}" @endif>

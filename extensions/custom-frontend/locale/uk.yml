@@ -2,6 +2,7 @@ commently-custom-frontend:
 
   discussions:
     title: Обговорення
+    now: зараз
     write: Написати
     toggle_filters: Показати фільтри
     filter_hint: "Фільтр діє лише для цього відвідування. Увімкніть розширення Tag Subscriptions, щоб зберігати обрані теми."
@@ -25,6 +26,7 @@ commently-custom-frontend:
     content_required: "(обов'язково)"
     content_placeholder: "Напишіть свій допис…"
     submit: Опублікувати обговорення
+    submitting: "Публікується…"
     back: "« Назад до обговорень"
 
   show:

@@ -5,7 +5,7 @@
 @section('content')
     <h1>{{ $translator->trans('commently-custom-frontend.create.title') }}</h1>
 
-    <form method="post" action="{{ $url->to('forum')->route('custom-frontend.discussions.create') }}" data-turbo="false">
+    <form method="post" action="{{ $url->to('forum')->route('custom-frontend.discussions.create') }}" data-turbo="false" onsubmit="var btn = this.querySelector('button[type=submit]'); if (btn && !btn.disabled) { btn.disabled = true; var t = btn.getAttribute('data-submitting'); if (t) btn.textContent = t; }">
         <input type="hidden" name="csrfToken" value="{{ $csrfToken }}">
         <p>
             <label for="title">{{ $translator->trans('commently-custom-frontend.create.title_label') }} <em>{{ $translator->trans('commently-custom-frontend.create.title_optional') }}</em></label><br>
@@ -34,7 +34,7 @@
             <textarea name="content" id="content" rows="8" required placeholder="{{ $translator->trans('commently-custom-frontend.create.content_placeholder') }}"></textarea>
         </p>
         <p>
-            <button type="submit">{{ $translator->trans('commently-custom-frontend.create.submit') }}</button>
+            <button type="submit" data-submitting="{{ $translator->trans('commently-custom-frontend.create.submitting') }}">{{ $translator->trans('commently-custom-frontend.create.submit') }}</button>
         </p>
     </form>
 
