@@ -10,6 +10,7 @@ use Flarum\Http\RequestUtil;
 use Flarum\Http\UrlGenerator;
 use Illuminate\Contracts\View\Factory as ViewFactory;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use Laminas\Diactoros\Response\HtmlResponse;
 use Laminas\Diactoros\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
@@ -95,9 +96,17 @@ class DiscussionController
                 return null;
             }
             $firstParagraph = trim((array_values(preg_split('/\s*\n\s*\n\s*/u', $text, 2)))[0] ?? $text);
-            $trimmed = preg_replace('/[^\p{L}]+$/u', '', $firstParagraph);
-            $excerpt = $trimmed . '...';
-            return mb_strlen($excerpt) >= 30 ? $excerpt : null;
+            $maxLength = 160;
+            if (Str::length($firstParagraph) > $maxLength) {
+                $truncated = Str::substr($firstParagraph, 0, $maxLength);
+                $cut = Str::beforeLast($truncated, ' ');
+                $trimmed = (string) Str::of($cut)->trim()->replaceMatches('/[^\p{L}]+$/u', '');
+                $excerpt = $trimmed . '...';
+            } else {
+                $trimmed = (string) Str::of($firstParagraph)->replaceMatches('/[^\p{L}]+$/u', '');
+                $excerpt = $trimmed . '...';
+            }
+            return Str::length($excerpt) >= 30 ? $excerpt : null;
         };
 
         $session = $request->getAttribute('session');
