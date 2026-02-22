@@ -9,8 +9,8 @@ commently-custom-frontend:
     no_discussions: No discussions yet.
     reply: Reply
     reply_with_count: "{count} replies"
-    react: React
-    react_with_count: "{count} reactions"
+    react: Like
+    react_with_count: "{count} likes"
     menu_aria: Menu
     discussion_number: "Discussion #{id}"
     previous: "« Previous"

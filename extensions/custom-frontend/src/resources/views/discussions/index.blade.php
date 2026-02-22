@@ -166,11 +166,11 @@
                                         $reactionCount = (int) ($discussion->attributes->likeCount ?? 0);
                                     @endphp
                                     <span class="discussion-item-meta-count discussion-item-comments-count">
-                                        <svg class="discussion-item-meta-icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="currentColor"><path d="M21.99 4c0-1.1-.89-2-1.99-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4-.01-18z"/></svg>
+                                        <svg class="discussion-item-meta-icon" viewBox="0 -960 960 960" width="16" height="16" aria-hidden="true" fill="currentColor"><path d="M880-80 720-240H320q-33 0-56.5-23.5T240-320v-40h440q33 0 56.5-23.5T760-440v-280h40q33 0 56.5 23.5T880-640v560ZM160-473l47-47h393v-280H160v327ZM80-280v-520q0-33 23.5-56.5T160-880h440q33 0 56.5 23.5T680-800v280q0 33-23.5 56.5T600-440H240L80-280Zm80-240v-280 280Z"/></svg>
                                         <span>{{ $replyCount === 0 ? $translator->trans('commently-custom-frontend.discussions.reply') : $translator->trans('commently-custom-frontend.discussions.reply_with_count', ['count' => $replyCount]) }}</span>
                                     </span>
                                     <span class="discussion-item-meta-count discussion-item-reactions-count">
-                                        <svg class="discussion-item-meta-icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="currentColor"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg>
+                                        <svg class="discussion-item-meta-icon" viewBox="0 -960 960 960" width="16" height="16" aria-hidden="true" fill="currentColor"><path d="M720-120H280v-520l280-280 50 50q7 7 11.5 19t4.5 23v14l-44 174h258q32 0 56 24t24 56v80q0 7-2 15t-4 15L794-168q-9 20-30 34t-44 14Zm-360-80h360l120-280v-80H480l54-220-174 174v406Zm0-406v406-406Zm-80-34v80H160v360h120v80H80v-520h200Z"/></svg>
                                         <span>{{ $reactionCount === 0 ? $translator->trans('commently-custom-frontend.discussions.react') : $translator->trans('commently-custom-frontend.discussions.react_with_count', ['count' => $reactionCount]) }}</span>
                                     </span>
                                 </span>

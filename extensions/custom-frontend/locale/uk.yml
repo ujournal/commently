@@ -9,8 +9,8 @@ commently-custom-frontend:
     no_discussions: Поки що немає обговорень.
     reply: Відповісти
     reply_with_count: "{count} відповідей"
-    react: Відреагувати
-    react_with_count: "{count} реакцій"
+    react: Подобається
+    react_with_count: "{count} вподобань"
     menu_aria: Меню
     discussion_number: "Обговорення #{id}"
     previous: "« Попередня"
