@@ -61,7 +61,9 @@ a {
 }
 
 .nav-tags-link {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
   padding: 0.35rem 0;
   font-size: 0.9375rem;
   color: #38342e;
@@ -69,6 +71,20 @@ a {
 
 .nav-tags-link:hover {
   color: #1a1814;
+}
+
+/* Small circle indicator for tags that have new (unread) discussions */
+.nav-tags-dot {
+  display: inline-block;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: #c45c26;
+  flex-shrink: 0;
+}
+
+.nav-tags-link--has-new:hover .nav-tags-dot {
+  background: #a04a1e;
 }
 
 .nav-tags-loading {
@@ -162,8 +178,9 @@ a {
     transform 0.2s ease;
 }
 
-.discussions-start-btn-icon {
+.discussions-start-btn:not(.discussions-start-btn-floating) > svg {
   flex-shrink: 0;
+  margin-left: -0.25rem;
 }
 
 .discussions-start-btn:hover {
@@ -215,8 +232,8 @@ a {
 
 .discussion-item-link {
   display: flex;
-  align-items: stretch;
-  gap: 1rem;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .discussion-item-thumbnail-container {
@@ -277,8 +294,6 @@ a {
 }
 
 .discussion-item-thumbnail {
-  /* max-width: 10rem; */
-  /* max-height: 10rem; */
   max-width: 100%;
   max-height: 100%;
   width: auto;
@@ -365,6 +380,25 @@ a {
   margin-top: 0.25rem;
 }
 
+/* Unread vs read: unread = bolder title and subtle highlight */
+.discussion-item--unread .discussion-item-title {
+  font-weight: 800;
+  color: #1a1814;
+}
+
+.discussion-item--read {
+  background-color: #f5f3f0;
+}
+
+.discussion-item--read .discussion-item-title {
+  font-weight: 500;
+  color: #534d47;
+}
+
+.discussion-item--unread {
+  outline-color: rgba(0, 0, 0, 0.08);
+}
+
 .discussion-item-excerpt {
   margin: 0 0 0.35rem 0;
   font-size: 1rem;
@@ -379,7 +413,6 @@ a {
   gap: 0.5rem;
   font-size: 0.875rem;
   color: #5c5852;
-  /* border-top: 1px solid #e0e0e0; */
   padding-top: 0.5rem;
 }
 
@@ -569,5 +602,4 @@ a {
   height: auto;
   display: block;
   vertical-align: middle;
-  /* margin-inline: auto; */
 }

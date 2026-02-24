@@ -12,6 +12,7 @@ use Flarum\Http\RouteHandlerFactory;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Registers all custom-frontend forum routes: "/", "/discussions/{id}", "/posts/{id}", POST "/discussions" (create), POST "/discussions/{id}/posts" (reply).
@@ -29,6 +30,7 @@ class ForumRoutesServiceProvider extends BaseServiceProvider
             if (!$extension) {
                 $view->with('customFrontendAsset', fn (string $path): string => '');
                 $view->with('tagsFrameUrl', '');
+                $view->with('primaryTags', []);
                 return;
             }
             $disk = $this->app->make('filesystem')->disk('flarum-assets');
@@ -37,6 +39,15 @@ class ForumRoutesServiceProvider extends BaseServiceProvider
             });
             $url = $this->app->make(UrlGenerator::class);
             $view->with('tagsFrameUrl', $url->to('forum')->route('custom-frontend.tags.index'));
+            $view->with('url', $url);
+            $view->with('translator', $this->app->make(TranslatorInterface::class));
+            try {
+                $request = $this->app->make(Request::class);
+                $tagController = $this->app->make(TagController::class);
+                $view->with('primaryTags', $tagController->getPrimaryTagsWithBadges($request));
+            } catch (\Throwable $e) {
+                $view->with('primaryTags', []);
+            }
         });
     }
 

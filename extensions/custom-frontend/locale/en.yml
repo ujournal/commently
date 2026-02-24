@@ -1,5 +1,8 @@
 commently-custom-frontend:
 
+  tags:
+    has_new: Has new discussions
+
   discussions:
     title: Discussions
     now: now

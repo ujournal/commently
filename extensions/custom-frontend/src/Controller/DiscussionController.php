@@ -10,6 +10,7 @@ use Flarum\Http\RequestUtil;
 use Flarum\Http\UrlGenerator;
 use Flarum\Settings\SettingsRepositoryInterface;
 use Illuminate\Contracts\View\Factory as ViewFactory;
+use Illuminate\Database\ConnectionInterface;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Laminas\Diactoros\Response\HtmlResponse;
@@ -28,7 +29,8 @@ class DiscussionController
         protected ViewFactory $view,
         protected UrlGenerator $url,
         protected TranslatorInterface $translator,
-        protected SettingsRepositoryInterface $settings
+        protected SettingsRepositoryInterface $settings,
+        protected ConnectionInterface $db
     ) {
     }
 
@@ -45,11 +47,9 @@ class DiscussionController
         $subscribedTagSlugs = $this->getSubscribedTagSlugs($request);
         $subscriptionApiAvailable = $this->isTagSubscriptionsApiAvailable($request);
 
-        // Filter slugs: URL ?tag=slug1,slug2 overrides; otherwise use subscribed tags
+        // Filter slugs only from URL: ?tag=slug or ?tag=slug1,slug2. No ?tag= means show all discussions.
+        // (Tag subscriptions are still used for the filter UI checkboxes; use "My tags" link to filter by them.)
         $filterSlugs = $this->parseTagFilter($tagParam);
-        if ($filterSlugs === []) {
-            $filterSlugs = $subscribedTagSlugs;
-        }
 
         $sortMap = [
             'latest' => '-lastPostedAt',
@@ -59,19 +59,25 @@ class DiscussionController
         ];
         $params = [
             'sort' => $sort && isset($sortMap[$sort]) ? $sortMap[$sort] : '-lastPostedAt',
-            'filter' => $filters,
             'page' => ['offset' => ($page - 1) * 20, 'limit' => 20],
             'include' => 'user,tags,firstPost',
         ];
-
+        if (is_array($filters) && $filters !== []) {
+            $params['filter'] = $filters;
+        }
         if ($q) {
+            $params['filter'] = $params['filter'] ?? [];
             $params['filter']['q'] = $q;
         }
         if ($filterSlugs !== []) {
+            $params['filter'] = $params['filter'] ?? [];
             $params['filter']['tag'] = implode(',', $filterSlugs);
         }
 
         $apiDocument = $this->getApiDocument($request, $params);
+        if (! isset($apiDocument->data) || ! is_array($apiDocument->data)) {
+            $apiDocument->data = [];
+        }
         $hasNextPage = isset($apiDocument->links->next);
 
         $getResource = function ($link) use ($apiDocument) {
@@ -125,6 +131,8 @@ class DiscussionController
             }
         }
 
+        $unreadDiscussionIds = $this->getUnreadDiscussionIds($request, $apiDocument);
+
         return $this->response('custom-frontend::discussions.index', [
             'apiDocument' => $apiDocument,
             'page' => $page,
@@ -140,6 +148,7 @@ class DiscussionController
             'csrfToken' => $csrfToken,
             'translator' => $this->translator,
             'locale' => $this->settings->get('default_locale', 'en'),
+            'unreadDiscussionIds' => $unreadDiscussionIds,
         ]);
     }
 
@@ -187,6 +196,25 @@ class DiscussionController
         $commentCount = (int) ($apiDocument->data->attributes->commentCount ?? 0);
         $hasPrevPage = $page > 1;
         $hasNextPage = $page < 1 + (int) ceil($commentCount / 20);
+
+        // Mark discussion as read for the current user when they visit (Flarum API: PATCH with lastReadPostNumber)
+        $actor = RequestUtil::getActor($request);
+        if (! $actor->isGuest()) {
+            $discussionId = $apiDocument->data->id ?? $id;
+            $lastReadPostNumber = $commentCount > 0 ? $commentCount : 1; // At least 1 so we create/update discussion_user and mark as read
+            $this->api
+                ->withParentRequest($request)
+                ->withBody([
+                    'data' => [
+                        'type' => 'discussions',
+                        'id' => (string) $discussionId,
+                        'attributes' => [
+                            'lastReadPostNumber' => $lastReadPostNumber,
+                        ],
+                    ],
+                ])
+                ->patch("/discussions/{$discussionId}");
+        }
 
         $url = function (array $query) use ($id) {
             $path = $this->url->to('forum')->route('custom-frontend.discussion', ['id' => $id]);
@@ -416,6 +444,70 @@ class DiscussionController
         return array_values(array_filter($slugs, fn ($s) => $s !== ''));
     }
 
+    /**
+     * Discussion IDs that are unread for the current user.
+     * Unread = no row in discussion_user for (user_id, discussion_id), or comment_count > last_read_post_number.
+     * Same rule is used for tag "unread" dots in TagController::getTagIdsWithUnreadToday.
+     *
+     * @param object $apiDocument API response with data array of discussions (id, attributes->commentCount).
+     * @return string[] Unread discussion IDs as strings.
+     */
+    protected function getUnreadDiscussionIds(Request $request, $apiDocument): array
+    {
+        $actor = RequestUtil::getActor($request);
+        if ($actor->isGuest()) {
+            return [];
+        }
+
+        $data = $apiDocument->data ?? [];
+        if ($data === []) {
+            return [];
+        }
+
+        $ids = [];
+        $commentCounts = [];
+        foreach ($data as $discussion) {
+            $id = is_array($discussion) ? ($discussion['id'] ?? null) : ($discussion->id ?? null);
+            if ($id === null) {
+                continue;
+            }
+            $did = (int) $id;
+            $ids[] = $did;
+            $attrs = is_array($discussion) ? ($discussion['attributes'] ?? []) : ($discussion->attributes ?? (object) []);
+            $commentCount = is_array($attrs) ? ($attrs['commentCount'] ?? 0) : ($attrs->commentCount ?? 0);
+            $commentCounts[$did] = (int) $commentCount;
+        }
+        if ($ids === []) {
+            return [];
+        }
+
+        try {
+            $rows = $this->db->table('discussion_user')
+                ->where('user_id', $actor->id)
+                ->whereIn('discussion_id', array_unique($ids))
+                ->select('discussion_id', 'last_read_post_number')
+                ->get();
+
+            $lastRead = [];
+            foreach ($rows as $row) {
+                $lastRead[(int) $row->discussion_id] = (int) $row->last_read_post_number;
+            }
+
+            $unread = [];
+            foreach ($commentCounts as $did => $commentCount) {
+                $readUpTo = $lastRead[$did] ?? null;
+                // No row in discussion_user = never opened = always unread. Row exists = unread when comment_count > last_read_post_number.
+                $isUnread = $readUpTo === null || $commentCount > $readUpTo;
+                if ($isUnread) {
+                    $unread[] = (string) $did;
+                }
+            }
+            return $unread;
+        } catch (\Throwable $e) {
+            return [];
+        }
+    }
+
     protected function getApiDocument(Request $request, array $params): object
     {
         $response = $this->api
@@ -423,7 +515,23 @@ class DiscussionController
             ->withQueryParams($params)
             ->get('/discussions');
 
-        return json_decode($response->getBody()->getContents());
+        $body = $response->getBody()->getContents();
+        $document = json_decode($body);
+        if (! $document instanceof \stdClass) {
+            $document = (object) ['data' => [], 'included' => []];
+        }
+        if ($response->getStatusCode() !== 200) {
+            $document->data = $document->data ?? [];
+            $document->included = $document->included ?? [];
+        }
+        if (! isset($document->data) || ! is_array($document->data)) {
+            $document->data = [];
+        }
+        if (! isset($document->included)) {
+            $document->included = [];
+        }
+
+        return $document;
     }
 
     protected function response(string $viewName, array $data = []): ResponseInterface
