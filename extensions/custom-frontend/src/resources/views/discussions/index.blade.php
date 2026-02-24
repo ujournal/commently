@@ -69,6 +69,7 @@
     @endif
 
     @if (isset($apiDocument->data) && count($apiDocument->data) > 0)
+        <div data-turbo-prefetch="false">
         <ul class="discussion-list">
             @foreach ($apiDocument->data as $discussion)
                 @php
@@ -195,6 +196,7 @@
         @if (!empty($hasNextPage))
             <a href="{{ $url->to('forum')->route('custom-frontend.index') }}?page={{ $page + 1 }}">{{ $translator->trans('commently-custom-frontend.discussions.next') }}</a>
         @endif
+        </div>
     @else
         <p>{{ $translator->trans('commently-custom-frontend.discussions.no_discussions') }}</p>
     @endif

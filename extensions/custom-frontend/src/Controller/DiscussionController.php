@@ -447,6 +447,7 @@ class DiscussionController
     /**
      * Discussion IDs that are unread for the current user.
      * Unread = no row in discussion_user for (user_id, discussion_id), or comment_count > last_read_post_number.
+     * For moderators and admins, discussions that have posts waiting for approval are also treated as unread.
      * Same rule is used for tag "unread" dots in TagController::getTagIdsWithUnreadToday.
      *
      * @param object $apiDocument API response with data array of discussions (id, attributes->commentCount).
@@ -502,8 +503,69 @@ class DiscussionController
                     $unread[] = (string) $did;
                 }
             }
+
+            // For moderators and admins: treat discussions with posts pending approval as unread.
+            if ($this->actorCanApprovePosts($actor)) {
+                $pendingIds = $this->getDiscussionIdsWithPendingApproval($ids);
+                foreach ($pendingIds as $did) {
+                    $key = (string) $did;
+                    if (! in_array($key, $unread, true)) {
+                        $unread[] = $key;
+                    }
+                }
+            }
+
             return $unread;
         } catch (\Throwable $e) {
+            return [];
+        }
+    }
+
+    /**
+     * Whether the user can approve posts (moderator or admin).
+     * Uses Flarum's permission system: admin has '*', moderators typically have discussion.editPosts or discussion.approvePosts.
+     */
+    protected function actorCanApprovePosts(\Flarum\User\User $actor): bool
+    {
+        if ($actor->hasPermission('*')) {
+            return true;
+        }
+        if ($actor->hasPermission('discussion.editPosts')) {
+            return true;
+        }
+        if ($actor->hasPermission('discussion.approvePosts')) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Discussion IDs (from the given set) that have at least one post waiting for approval.
+     * Relies on flarum/approval: posts.is_approved = 0.
+     *
+     * @param int[] $discussionIds
+     * @return int[]
+     */
+    protected function getDiscussionIdsWithPendingApproval(array $discussionIds): array
+    {
+        if ($discussionIds === []) {
+            return [];
+        }
+
+        $ids = array_values(array_unique(array_map('intval', $discussionIds)));
+
+        try {
+            return $this->db->table('posts')
+                ->whereIn('discussion_id', $ids)
+                ->where('is_approved', 0)
+                ->distinct()
+                ->pluck('discussion_id')
+                ->map(fn ($id) => (int) $id)
+                ->values()
+                ->all();
+        } catch (\Throwable $e) {
+            // Column may not exist if approval extension is not installed
             return [];
         }
     }

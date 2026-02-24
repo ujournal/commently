@@ -142,9 +142,68 @@ class TagController
                 ->pluck('tag_id')
                 ->all();
 
-            return array_values(array_map('intval', array_unique($tagIds)));
+            $tagIds = array_values(array_map('intval', array_unique($tagIds)));
+
+            // For moderators and admins: also show dot for tags that have discussions with posts pending approval.
+            if ($this->actorCanApprovePosts($actor)) {
+                $pendingTagIds = $this->getTagIdsWithPendingApproval();
+                $tagIds = array_values(array_unique(array_merge($tagIds, $pendingTagIds)));
+            }
+
+            return $tagIds;
         } catch (\Throwable $e) {
             return null;
+        }
+    }
+
+    /**
+     * Whether the user can approve posts (moderator or admin).
+     * Must match DiscussionController::actorCanApprovePosts.
+     */
+    protected function actorCanApprovePosts(\Flarum\User\User $actor): bool
+    {
+        if ($actor->hasPermission('*')) {
+            return true;
+        }
+        if ($actor->hasPermission('discussion.editPosts')) {
+            return true;
+        }
+        if ($actor->hasPermission('discussion.approvePosts')) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Tag IDs that have at least one discussion with posts waiting for approval.
+     * Relies on flarum/approval: posts.is_approved = 0.
+     *
+     * @return int[]
+     */
+    protected function getTagIdsWithPendingApproval(): array
+    {
+        try {
+            $discussionIds = $this->db->table('posts')
+                ->where('is_approved', 0)
+                ->distinct()
+                ->pluck('discussion_id')
+                ->all();
+
+            $discussionIds = array_values(array_unique(array_map('intval', $discussionIds)));
+            if ($discussionIds === []) {
+                return [];
+            }
+
+            $tagIds = $this->db->table('discussion_tag')
+                ->whereIn('discussion_id', $discussionIds)
+                ->distinct()
+                ->pluck('tag_id')
+                ->all();
+
+            return array_values(array_map('intval', array_unique($tagIds)));
+        } catch (\Throwable $e) {
+            return [];
         }
     }
 
