@@ -15,7 +15,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
- * Registers all custom-frontend forum routes: "/", "/discussions/{id}", "/posts/{id}", POST "/discussions" (create), POST "/discussions/{id}/posts" (reply).
+ * Registers all custom-frontend forum routes: "/", "/t/{slug}" (tag filter), "/discussions/{id}", "/posts/{id}", POST "/discussions" (create), POST "/discussions/{id}/posts" (reply).
  * The "/" route replaces Flarum's default so we register in afterResolving to avoid duplicate route errors.
  */
 class ForumRoutesServiceProvider extends BaseServiceProvider
@@ -55,6 +55,7 @@ class ForumRoutesServiceProvider extends BaseServiceProvider
     {
         $this->app->afterResolving('flarum.forum.routes', function (RouteCollection $routes, Container $container) {
             $routes->removeRoute('default');
+            $routes->removeRoute('tag');  // Flarum's /t/{slug}; we replace it with our handler but keep name 'tag' for Mentions/URL generation
 
             /** @var RouteHandlerFactory $factory */
             $factory = $container->make(RouteHandlerFactory::class);
@@ -69,6 +70,7 @@ class ForumRoutesServiceProvider extends BaseServiceProvider
             };
 
             $routes->get('/', 'custom-frontend.index', $toAction(DiscussionController::class, 'index'));
+            $routes->get('/t/{slug}', 'tag', $toAction(DiscussionController::class, 'index'));
             $routes->get('/tags', 'custom-frontend.tags.index', $toAction(TagController::class, 'index'));
             $routes->post('/discussions/tag-subscriptions', 'custom-frontend.discussions.tag-subscriptions', $toAction(DiscussionController::class, 'updateTagSubscriptions'));
             $routes->get('/discussions/create', 'custom-frontend.discussions.create.page', $toAction(DiscussionController::class, 'create'));

@@ -6,7 +6,8 @@ use Flarum\Extend;
 
 return [
     (new Extend\Frontend('forum'))
-        ->removeRoute('tags'),
+        ->removeRoute('tags')
+        ->removeRoute('tag'),
 
     (new Extend\ServiceProvider)
         ->register(ForumRoutesServiceProvider::class)

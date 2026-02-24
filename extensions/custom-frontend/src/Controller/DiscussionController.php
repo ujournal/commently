@@ -41,13 +41,31 @@ class DiscussionController
         $q = Arr::pull($queryParams, 'q');
         $page = max(1, (int) Arr::pull($queryParams, 'page'));
         $filters = Arr::pull($queryParams, 'filter', []);
-        $tagParam = Arr::pull($queryParams, 'tag');
+        // Prefer path /t/{slug}, fallback to query ?tag= for backward compatibility
+        $slugFromPath = Arr::pull($queryParams, 'slug');
+        $tagParam = $slugFromPath ?? Arr::pull($queryParams, 'tag');
 
         $primaryTags = $this->getPrimaryTags($request);
         $subscribedTagSlugs = $this->getSubscribedTagSlugs($request);
         $subscriptionApiAvailable = $this->isTagSubscriptionsApiAvailable($request);
 
-        // Filter slugs only from URL: ?tag=slug or ?tag=slug1,slug2. No ?tag= means show all discussions.
+        // Redirect old ?tag=slug to canonical /t/slug (single tag only)
+        if ($slugFromPath === null && $tagParam !== null && $tagParam !== '' && strpos($tagParam, ',') === false) {
+            $canonicalUrl = $this->url->to('forum')->route('tag', ['slug' => $tagParam]);
+            $extra = [];
+            if ($sort) {
+                $extra['sort'] = $sort;
+            }
+            if ($page > 1) {
+                $extra['page'] = $page;
+            }
+            if ($extra !== []) {
+                $canonicalUrl .= '?' . http_build_query($extra);
+            }
+            return new RedirectResponse($canonicalUrl);
+        }
+
+        // Filter slugs from URL: /t/slug or ?tag=slug or ?tag=slug1,slug2. No tag means show all discussions.
         // (Tag subscriptions are still used for the filter UI checkboxes; use "My tags" link to filter by them.)
         $filterSlugs = $this->parseTagFilter($tagParam);
 
@@ -56,6 +74,8 @@ class DiscussionController
             'top' => '-commentCount',
             'newest' => '-createdAt',
             'oldest' => 'createdAt',
+            'likes' => '-likeCount',   // sort-by-likes extension
+            'hot' => '-hot',           // sort-by-likes extension (engagement + time decay)
         ];
         $params = [
             'sort' => $sort && isset($sortMap[$sort]) ? $sortMap[$sort] : '-lastPostedAt',
@@ -74,11 +94,20 @@ class DiscussionController
             $params['filter']['tag'] = implode(',', $filterSlugs);
         }
 
-        $apiDocument = $this->getApiDocument($request, $params);
+        [$apiDocument, $discussionsApiOk, $apiStatusCode, $apiErrorDetail] = $this->getApiDocument($request, $params);
         if (! isset($apiDocument->data) || ! is_array($apiDocument->data)) {
             $apiDocument->data = [];
         }
         $hasNextPage = isset($apiDocument->links->next);
+
+        $queryParams = $request->getQueryParams();
+        $debugDiscussions = isset($queryParams['debug_discussions']) && $queryParams['debug_discussions'] === '1';
+        $discussionsDebug = $debugDiscussions ? [
+            'status' => $apiStatusCode,
+            'dataCount' => count($apiDocument->data),
+            'actorId' => RequestUtil::getActor($request)->id ?? 'guest',
+            'errorDetail' => $apiErrorDetail,
+        ] : null;
 
         $getResource = function ($link) use ($apiDocument) {
             return Arr::first($apiDocument->included ?? [], function ($value) use ($link) {
@@ -149,6 +178,10 @@ class DiscussionController
             'translator' => $this->translator,
             'locale' => $this->settings->get('default_locale', 'en'),
             'unreadDiscussionIds' => $unreadDiscussionIds,
+            'discussionsApiOk' => $discussionsApiOk,
+            'discussionsDebug' => $discussionsDebug ?? null,
+            'sort' => $sort,
+            'sortMap' => $sortMap,
         ]);
     }
 
@@ -255,7 +288,11 @@ class DiscussionController
 
         $indexUrl = $this->url->to('forum')->route('custom-frontend.index');
         if ($response->getStatusCode() !== 200 && $tagSlugs !== []) {
-            $indexUrl .= '?tag=' . implode(',', array_map('urlencode', $tagSlugs));
+            if (count($tagSlugs) === 1) {
+                $indexUrl = $this->url->to('forum')->route('tag', ['slug' => $tagSlugs[0]]);
+            } else {
+                $indexUrl .= '?tag=' . implode(',', array_map('urlencode', $tagSlugs));
+            }
         }
 
         return new RedirectResponse($indexUrl);
@@ -429,7 +466,7 @@ class DiscussionController
     }
 
     /**
-     * Parse ?tag=slug or ?tag=slug1,slug2 into array of slugs.
+     * Parse /t/slug or ?tag=slug or ?tag=slug1,slug2 into array of slugs.
      *
      * @return string[]
      */
@@ -570,19 +607,24 @@ class DiscussionController
         }
     }
 
-    protected function getApiDocument(Request $request, array $params): object
+    /**
+     * @return array{0: object, 1: bool, 2: int, 3: ?string} [apiDocument, apiOk, statusCode, errorDetail] errorDetail when status !== 200 (for debug).
+     */
+    protected function getApiDocument(Request $request, array $params): array
     {
         $response = $this->api
             ->withParentRequest($request)
             ->withQueryParams($params)
             ->get('/discussions');
 
+        $statusCode = $response->getStatusCode();
         $body = $response->getBody()->getContents();
         $document = json_decode($body);
         if (! $document instanceof \stdClass) {
             $document = (object) ['data' => [], 'included' => []];
         }
-        if ($response->getStatusCode() !== 200) {
+        $ok = $statusCode === 200;
+        if (! $ok) {
             $document->data = $document->data ?? [];
             $document->included = $document->included ?? [];
         }
@@ -593,7 +635,19 @@ class DiscussionController
             $document->included = [];
         }
 
-        return $document;
+        $errorDetail = null;
+        if (! $ok && $body !== '') {
+            $decoded = json_decode($body, true);
+            if (isset($decoded['errors'][0]['detail'])) {
+                $errorDetail = $decoded['errors'][0]['detail'];
+            } elseif (isset($decoded['errors'][0]['title'])) {
+                $errorDetail = $decoded['errors'][0]['title'];
+            } else {
+                $errorDetail = Str::limit(strip_tags($body), 500);
+            }
+        }
+
+        return [$document, $ok, $statusCode, $errorDetail];
     }
 
     protected function response(string $viewName, array $data = []): ResponseInterface

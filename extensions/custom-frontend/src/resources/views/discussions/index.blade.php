@@ -3,15 +3,34 @@
 @section('title', isset($activeTagName) ? $activeTagName . ' – ' . $translator->trans('commently-custom-frontend.discussions.title') : $translator->trans('commently-custom-frontend.discussions.title'))
 
 @section('content')
+    @php
+        $listBaseUrl = (isset($filterSlugs) && count($filterSlugs) === 1)
+            ? $url->to('forum')->route('tag', ['slug' => $filterSlugs[0]])
+            : $url->to('forum')->route('custom-frontend.index');
+        $listUrl = function ($page = 1, $sortVal = null) use ($listBaseUrl, $sort) {
+            $s = $sortVal !== null ? $sortVal : $sort;
+            $q = $page > 1 ? ['page' => $page] : [];
+            if ($s !== null && $s !== '' && $s !== 'latest') {
+                $q['sort'] = $s;
+            }
+            return $q === [] ? $listBaseUrl : $listBaseUrl . '?' . http_build_query($q);
+        };
+        $sortOptions = [
+            'latest' => 'commently-custom-frontend.discussions.sort_latest',
+            'top' => 'commently-custom-frontend.discussions.sort_top',
+            'likes' => 'commently-custom-frontend.discussions.sort_likes',
+            'hot' => 'commently-custom-frontend.discussions.sort_hot',
+            'newest' => 'commently-custom-frontend.discussions.sort_newest',
+            'oldest' => 'commently-custom-frontend.discussions.sort_oldest',
+        ];
+    @endphp
     <div class="discussions-header">
         <h1 class="discussions-title">{{ isset($activeTagName) ? $activeTagName : $translator->trans('commently-custom-frontend.discussions.title') }}</h1>
         <div class="discussions-header-actions">
-            @if (count($primaryTags ?? []) > 0)
-                <button type="button" class="discussions-filter-btn" aria-label="{{ $translator->trans('commently-custom-frontend.discussions.toggle_filters') }}" aria-expanded="false" aria-controls="discussion-tag-filters" title="{{ $translator->trans('commently-custom-frontend.discussions.toggle_filters') }}">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="M400-240v-80h160v80H400ZM240-440v-80h480v80H240ZM120-640v-80h720v80H120Z"/></svg>
-                </button>
-            @endif
-                <a href="{{ $url->to('forum')->route('custom-frontend.discussions.create.page') }}" class="discussions-start-btn" id="discussions-header-write" data-turbo="true">
+            <button type="button" class="discussions-filter-btn" aria-label="{{ $translator->trans('commently-custom-frontend.discussions.toggle_filters') }}" aria-expanded="false" aria-controls="discussion-tag-filters" title="{{ $translator->trans('commently-custom-frontend.discussions.toggle_filters') }}">
+                <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="M400-240v-80h160v80H400ZM240-440v-80h480v80H240ZM120-640v-80h720v80H120Z"/></svg>
+            </button>
+            <a href="{{ $url->to('forum')->route('custom-frontend.discussions.create.page') }}" class="discussions-start-btn" id="discussions-header-write" data-turbo="true">
                 <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/></svg>
                 <span>{{ $translator->trans('commently-custom-frontend.discussions.write') }}</span>
             </a>
@@ -22,22 +41,36 @@
         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/></svg>
     </a>
 
-    @if (count($primaryTags ?? []) > 0)
-        <div class="discussion-tag-filters discussion-tag-filters-is-hidden" id="discussion-tag-filters">
+    <div class="discussion-tag-filters discussion-tag-filters-is-hidden" id="discussion-tag-filters">
+        <div class="discussion-filters-section" role="group" aria-label="{{ $translator->trans('commently-custom-frontend.discussions.sort_by') }}">
+            <span class="discussion-filters-section-label">{{ $translator->trans('commently-custom-frontend.discussions.sort_by') }}</span>
+            <div class="discussions-sort">
+                @foreach ($sortOptions as $key => $labelKey)
+                    @if (isset($sortMap[$key]))
+                        <a href="{{ $listUrl(1, $key) }}" class="discussions-sort-link {{ ($sort ?? 'latest') === $key ? 'discussions-sort-link--active' : '' }}" data-turbo="true">{{ $translator->trans($labelKey) }}</a>
+                    @endif
+                @endforeach
+            </div>
+        </div>
+        @if (count($primaryTags ?? []) > 0)
             <form method="post" action="{{ $url->to('forum')->route('custom-frontend.discussions.tag-subscriptions') }}" class="discussion-tag-filters-form" data-turbo="true">
                 <input type="hidden" name="csrfToken" value="{{ $csrfToken ?? '' }}">
-                <div class="discussion-tag-filters-list">
-                    @foreach ($primaryTags as $tag)
-                        @php
-                            $slug = $tag['attributes']['slug'] ?? (string) $tag['id'];
-                            $name = $tag['attributes']['name'] ?? $slug;
-                            $isChecked = in_array($slug, $filterSlugs ?? [], true);
-                        @endphp
-                        <label class="discussion-tag-filter-item">
-                            <input type="checkbox" name="tag_slugs[]" value="{{ $slug }}" {{ $isChecked ? 'checked' : '' }}>
-                            <span class="discussion-tag-filter-name">{{ $name }}</span>
-                        </label>
-                    @endforeach
+                <div class="discussion-filters-section">
+                    <span class="discussion-filters-section-label">{{ $translator->trans('commently-custom-frontend.discussions.filter_by_tag') }}</span>
+                    <div class="discussion-tag-filters-list">
+                        @foreach ($primaryTags as $tag)
+                            @php
+                                $slug = $tag['attributes']['slug'] ?? (string) $tag['id'];
+                                $name = $tag['attributes']['name'] ?? $slug;
+                                $slugsForCheckboxes = count($filterSlugs ?? []) > 0 ? ($filterSlugs ?? []) : ($subscribedTagSlugs ?? []);
+                                $isChecked = in_array($slug, $slugsForCheckboxes, true);
+                            @endphp
+                            <label class="discussion-tag-filter-item">
+                                <input type="checkbox" name="tag_slugs[]" value="{{ $slug }}" {{ $isChecked ? 'checked' : '' }}>
+                                <span class="discussion-tag-filter-name">{{ $name }}</span>
+                            </label>
+                        @endforeach
+                    </div>
                 </div>
             </form>
             <script>
@@ -53,20 +86,20 @@
             @if (!($subscriptionApiAvailable ?? false) && count($filterSlugs ?? []) > 0)
                 <p class="discussion-tag-filters-hint">{{ $translator->trans('commently-custom-frontend.discussions.filter_hint') }}</p>
             @endif
-        </div>
-        <script>
-            (function () {
-                var btn = document.querySelector('.discussions-filter-btn');
-                var block = document.getElementById('discussion-tag-filters');
-                if (btn && block) {
-                    btn.addEventListener('click', function () {
-                        var hidden = block.classList.toggle('discussion-tag-filters-is-hidden');
-                        btn.setAttribute('aria-expanded', hidden ? 'false' : 'true');
-                    });
-                }
-            })();
-        </script>
-    @endif
+        @endif
+    </div>
+    <script>
+        (function () {
+            var btn = document.querySelector('.discussions-filter-btn');
+            var block = document.getElementById('discussion-tag-filters');
+            if (btn && block) {
+                btn.addEventListener('click', function () {
+                    var hidden = block.classList.toggle('discussion-tag-filters-is-hidden');
+                    btn.setAttribute('aria-expanded', hidden ? 'false' : 'true');
+                });
+            }
+        })();
+    </script>
 
     @if (isset($apiDocument->data) && count($apiDocument->data) > 0)
         <div data-turbo-prefetch="false">
@@ -191,14 +224,28 @@
         </ul>
 
         @if ($page > 1)
-            <a href="{{ $url->to('forum')->route('custom-frontend.index') }}?page={{ $page - 1 }}">{{ $translator->trans('commently-custom-frontend.discussions.previous') }}</a>
+            <a href="{{ $listUrl($page - 1) }}" data-turbo="true">{{ $translator->trans('commently-custom-frontend.discussions.previous') }}</a>
         @endif
         @if (!empty($hasNextPage))
-            <a href="{{ $url->to('forum')->route('custom-frontend.index') }}?page={{ $page + 1 }}">{{ $translator->trans('commently-custom-frontend.discussions.next') }}</a>
+            <a href="{{ $listUrl($page + 1) }}" data-turbo="true">{{ $translator->trans('commently-custom-frontend.discussions.next') }}</a>
         @endif
         </div>
     @else
-        <p>{{ $translator->trans('commently-custom-frontend.discussions.no_discussions') }}</p>
+        <p class="discussions-empty-message">
+            @if (!($discussionsApiOk ?? true))
+                {{ $translator->trans('commently-custom-frontend.discussions.load_error') }}
+            @else
+                {{ $translator->trans('commently-custom-frontend.discussions.no_discussions') }}
+            @endif
+        </p>
+        @if (!empty($discussionsDebug))
+            <p class="discussions-debug" style="margin-top:1rem;font-size:0.875rem;color:#666;">
+                Debug (add <code>?debug_discussions=1</code> to URL): API status {{ $discussionsDebug['status'] }}, data count {{ $discussionsDebug['dataCount'] }}, actor {{ $discussionsDebug['actorId'] }}.
+            </p>
+            @if (!empty($discussionsDebug['errorDetail']))
+                <p class="discussions-debug-error" style="margin-top:0.5rem;font-size:0.875rem;color:#c00;white-space:pre-wrap;word-break:break-word;">{{ $discussionsDebug['errorDetail'] }}</p>
+            @endif
+        @endif
     @endif
 
     <script>
