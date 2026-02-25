@@ -455,6 +455,7 @@ a {
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
+  background-color: rgba(0, 0, 0, 0.06);
 }
 
 .discussion-item-user-avatar--placeholder svg {
