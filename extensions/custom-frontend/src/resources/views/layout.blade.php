@@ -11,6 +11,14 @@
 <body data-turbo="true">
     @if(!empty($primaryTags ?? []) || !empty($tagsFrameUrl ?? ''))
     <nav class="nav" aria-label="Navigation">
+        <button type="button" class="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="tags-frame">
+            <span class="nav-toggle-icon nav-toggle-icon--menu" aria-hidden="true">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
+            </span>
+            <span class="nav-toggle-icon nav-toggle-icon--close" aria-hidden="true">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </span>
+        </button>
         <turbo-frame id="tags-frame" data-turbo-permanent data-tags-src="{{ $tagsFrameUrl ?? '' }}" src="{{ $tagsFrameUrl ?? '' }}">
             <ul class="nav-list">
                 <li class="nav-list-item">

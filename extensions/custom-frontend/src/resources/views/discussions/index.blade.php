@@ -261,16 +261,30 @@
             var headerWrite = document.getElementById('discussions-header-write');
             var floatingWrite = document.getElementById('discussions-write-floating');
             if (!headerWrite || !floatingWrite) return;
-            var observer = new IntersectionObserver(function (entries) {
-                entries.forEach(function (entry) {
-                    if (entry.isIntersecting) {
-                        floatingWrite.setAttribute('hidden', '');
-                    } else {
-                        floatingWrite.removeAttribute('hidden');
-                    }
-                });
-            }, { threshold: 0, rootMargin: '0px' });
-            observer.observe(headerWrite);
+            var mq = window.matchMedia('(max-width: 48rem)');
+            var scrollObserver = null;
+            function setup() {
+                if (scrollObserver) {
+                    scrollObserver.disconnect();
+                    scrollObserver = null;
+                }
+                if (mq.matches) {
+                    floatingWrite.removeAttribute('hidden');
+                    return;
+                }
+                scrollObserver = new IntersectionObserver(function (entries) {
+                    entries.forEach(function (entry) {
+                        if (entry.isIntersecting) {
+                            floatingWrite.setAttribute('hidden', '');
+                        } else {
+                            floatingWrite.removeAttribute('hidden');
+                        }
+                    });
+                }, { threshold: 0, rootMargin: '0px' });
+                scrollObserver.observe(headerWrite);
+            }
+            setup();
+            mq.addEventListener('change', setup);
         })();
     </script>
 @endsection
