@@ -11,8 +11,12 @@ class UpdateDiscussionLikeCount
     public function handle(object $event): void
     {
         $post = $event->post;
-        $discussionId = $post->getAttribute('discussion_id') ?? $post->discussion_id ?? null;
+        // Only count likes on the first post (OP) as discussion likes
+        if ((int) ($post->getAttribute('number') ?? $post->number ?? 0) !== 1) {
+            return;
+        }
 
+        $discussionId = $post->getAttribute('discussion_id') ?? $post->discussion_id ?? null;
         if (! $discussionId) {
             return;
         }

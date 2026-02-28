@@ -2,6 +2,7 @@
 
 namespace Commently\UploadDimensions;
 
+use Commently\UploadDimensions\Console\BackfillDimensionsCommand;
 use Flarum\Api\Controller\ListDiscussionsController;
 use Flarum\Extend;
 use Flarum\Post\Post;
@@ -10,6 +11,9 @@ use FoF\Upload\Events\File\WillBeUploaded;
 use FoF\Upload\File;
 
 return [
+    (new Extend\Console())
+        ->command(BackfillDimensionsCommand::class),
+
     (new Extend\Event())
         ->listen(WillBeUploaded::class, Listeners\AddFileDimensions::class),
 

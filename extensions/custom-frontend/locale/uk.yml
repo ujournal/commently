@@ -1,0 +1,56 @@
+commently-custom-frontend:
+  tags:
+    has_new: Є нові обговорення
+
+  discussions:
+    title: Обговорення
+    sort_by: Сортувати
+    sort_latest: Останні
+    sort_top: Найбільше відповідей
+    sort_likes: Найбільше вподобайок
+    sort_hot: Популярні
+    sort_newest: Нові
+    sort_oldest: Найстаріші
+    now: зараз
+    write: Написати
+    toggle_filters: Показати фільтри
+    filter_by_tag: Фільтр за тегом
+    filter_hint: "Фільтр діє лише для цього відвідування. Увімкніть розширення Tag Subscriptions, щоб зберігати обрані теми."
+    no_discussions: Поки що немає обговорень.
+    reply: Відповісти
+    reply_with_count: "{count, plural, one {# відповідь} few {# відповіді} many {# відповідей} other {# відповіді}}"
+    react: Подобається
+    react_with_count: "{count, plural, one {# вподобайка} few {# вподобайки} many {# вподобайок} other {# вподобайки}}"
+    menu_aria: Меню
+    discussion_number: "Обговорення #{id}"
+    previous: "« Попередня"
+    next: "Наступна »"
+
+  create:
+    title: Нове обговорення
+    title_label: Заголовок
+    title_optional: "(необов'язково)"
+    title_placeholder: "Залиште порожнім для «Опубліковано @username, дата»"
+    tags_label: Теги
+    content_label: Зміст
+    content_required: "(обов'язково)"
+    content_placeholder: "Напишіть свій допис…"
+    submit: Опублікувати обговорення
+    submitting: "Публікується…"
+    back: "« Назад до обговорень"
+
+  show:
+    default_title: Обговорення
+    reply_heading: Відповідь
+    reply_label: Ваша відповідь
+    reply_placeholder: "Напишіть відповідь…"
+    post_reply: Опублікувати відповідь
+    previous: "« Попередня"
+    next: "Наступна »"
+
+  layout:
+    default_title: Форум
+
+  post:
+    title: "Допис #{id}"
+    custom_view: Сторінка допису.

@@ -1,0 +1,662 @@
+<?php
+
+namespace Commently\CustomFrontend\Controller;
+
+use Carbon\Carbon;
+use Commently\CustomFrontend\Request\CreateDiscussionRequest;
+use Flarum\Api\Client as ApiClient;
+use Flarum\Http\Exception\RouteNotFoundException;
+use Flarum\Http\RequestUtil;
+use Flarum\Http\UrlGenerator;
+use Flarum\Settings\SettingsRepositoryInterface;
+use Illuminate\Contracts\View\Factory as ViewFactory;
+use Illuminate\Database\ConnectionInterface;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
+use Laminas\Diactoros\Response\HtmlResponse;
+use Laminas\Diactoros\Response\RedirectResponse;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Symfony\Contracts\Translation\TranslatorInterface;
+
+/**
+ * Single controller for discussions: index, show, create form, and store.
+ */
+class DiscussionController
+{
+    public function __construct(
+        protected ApiClient $api,
+        protected ViewFactory $view,
+        protected UrlGenerator $url,
+        protected TranslatorInterface $translator,
+        protected SettingsRepositoryInterface $settings,
+        protected ConnectionInterface $db
+    ) {
+    }
+
+    public function index(Request $request): ResponseInterface
+    {
+        $queryParams = $request->getQueryParams();
+        $sort = Arr::pull($queryParams, 'sort');
+        $q = Arr::pull($queryParams, 'q');
+        $page = max(1, (int) Arr::pull($queryParams, 'page'));
+        $filters = Arr::pull($queryParams, 'filter', []);
+        // Prefer path /t/{slug}, fallback to query ?tag= for backward compatibility
+        $slugFromPath = Arr::pull($queryParams, 'slug');
+        $tagParam = $slugFromPath ?? Arr::pull($queryParams, 'tag');
+
+        $primaryTags = $this->getPrimaryTags($request);
+        $subscribedTagSlugs = $this->getSubscribedTagSlugs($request);
+        $subscriptionApiAvailable = $this->isTagSubscriptionsApiAvailable($request);
+
+        // Redirect old ?tag=slug to canonical /t/slug (single tag only)
+        if ($slugFromPath === null && $tagParam !== null && $tagParam !== '' && strpos($tagParam, ',') === false) {
+            $canonicalUrl = $this->url->to('forum')->route('tag', ['slug' => $tagParam]);
+            $extra = [];
+            if ($sort) {
+                $extra['sort'] = $sort;
+            }
+            if ($page > 1) {
+                $extra['page'] = $page;
+            }
+            if ($extra !== []) {
+                $canonicalUrl .= '?' . http_build_query($extra);
+            }
+            return new RedirectResponse($canonicalUrl);
+        }
+
+        // Filter slugs from URL: /t/slug or ?tag=slug or ?tag=slug1,slug2. No tag means show all discussions.
+        // (Tag subscriptions are still used for the filter UI checkboxes; use "My tags" link to filter by them.)
+        $filterSlugs = $this->parseTagFilter($tagParam);
+
+        $sortMap = [
+            'latest' => '-lastPostedAt',
+            'top' => '-commentCount',
+            'newest' => '-createdAt',
+            'oldest' => 'createdAt',
+            'likes' => '-likeCount',   // sort-by-likes extension
+            'hot' => '-hot',           // sort-by-likes extension (engagement + time decay)
+        ];
+        $params = [
+            'sort' => $sort && isset($sortMap[$sort]) ? $sortMap[$sort] : '-lastPostedAt',
+            'page' => ['offset' => ($page - 1) * 20, 'limit' => 20],
+            'include' => 'user,tags,firstPost',
+        ];
+        if (is_array($filters) && $filters !== []) {
+            $params['filter'] = $filters;
+        }
+        if ($q) {
+            $params['filter'] = $params['filter'] ?? [];
+            $params['filter']['q'] = $q;
+        }
+        if ($filterSlugs !== []) {
+            $params['filter'] = $params['filter'] ?? [];
+            $params['filter']['tag'] = implode(',', $filterSlugs);
+        }
+
+        [$apiDocument, $discussionsApiOk, $apiStatusCode, $apiErrorDetail] = $this->getApiDocument($request, $params);
+        if (! isset($apiDocument->data) || ! is_array($apiDocument->data)) {
+            $apiDocument->data = [];
+        }
+        $hasNextPage = isset($apiDocument->links->next);
+
+        $queryParams = $request->getQueryParams();
+        $debugDiscussions = isset($queryParams['debug_discussions']) && $queryParams['debug_discussions'] === '1';
+        $discussionsDebug = $debugDiscussions ? [
+            'status' => $apiStatusCode,
+            'dataCount' => count($apiDocument->data),
+            'actorId' => RequestUtil::getActor($request)->id ?? 'guest',
+            'errorDetail' => $apiErrorDetail,
+        ] : null;
+
+        $getResource = function ($link) use ($apiDocument) {
+            return Arr::first($apiDocument->included ?? [], function ($value) use ($link) {
+                return $value->type === $link->type && $value->id === (string) $link->id;
+            });
+        };
+
+        $getDiscussionExcerpt = function ($discussion) use ($getResource): ?string {
+            $firstPostLink = $discussion->relationships->firstPost->data ?? null;
+            if (! $firstPostLink) {
+                return null;
+            }
+            $post = $getResource($firstPostLink);
+            if (! $post) {
+                return null;
+            }
+            $contentHtml = $post->attributes->contentHtml ?? '';
+            if ($contentHtml === '') {
+                return null;
+            }
+            $text = trim(strip_tags($contentHtml));
+            if ($text === '') {
+                return null;
+            }
+            $firstParagraph = trim((array_values(preg_split('/\s*\n\s*\n\s*/u', $text, 2)))[0] ?? $text);
+            $maxLength = 160;
+            if (Str::length($firstParagraph) > $maxLength) {
+                $truncated = Str::substr($firstParagraph, 0, $maxLength);
+                $cut = Str::beforeLast($truncated, ' ');
+                $trimmed = (string) Str::of($cut)->trim()->replaceMatches('/[^\p{L}]+$/u', '');
+                $excerpt = $trimmed . '...';
+            } else {
+                $trimmed = (string) Str::of($firstParagraph)->replaceMatches('/[^\p{L}]+$/u', '');
+                $excerpt = $trimmed . '...';
+            }
+            return Str::length($excerpt) >= 30 ? $excerpt : null;
+        };
+
+        $session = $request->getAttribute('session');
+        $csrfToken = $session ? $session->token() : '';
+
+        $activeTagName = null;
+        if (count($filterSlugs) === 1) {
+            foreach ($primaryTags as $tag) {
+                $slug = $tag['attributes']['slug'] ?? (string) $tag['id'];
+                if ($slug === $filterSlugs[0]) {
+                    $activeTagName = $tag['attributes']['name'] ?? $filterSlugs[0];
+                    break;
+                }
+            }
+        }
+
+        $unreadDiscussionIds = $this->getUnreadDiscussionIds($request, $apiDocument);
+
+        return $this->response('custom-frontend::discussions.index', [
+            'apiDocument' => $apiDocument,
+            'page' => $page,
+            'hasNextPage' => $hasNextPage,
+            'url' => $this->url,
+            'getResource' => $getResource,
+            'getDiscussionExcerpt' => $getDiscussionExcerpt,
+            'primaryTags' => $primaryTags,
+            'subscribedTagSlugs' => $subscribedTagSlugs,
+            'filterSlugs' => $filterSlugs,
+            'activeTagName' => $activeTagName,
+            'subscriptionApiAvailable' => $subscriptionApiAvailable,
+            'csrfToken' => $csrfToken,
+            'translator' => $this->translator,
+            'locale' => $this->settings->get('default_locale', 'en'),
+            'unreadDiscussionIds' => $unreadDiscussionIds,
+            'discussionsApiOk' => $discussionsApiOk,
+            'discussionsDebug' => $discussionsDebug ?? null,
+            'sort' => $sort,
+            'sortMap' => $sortMap,
+        ]);
+    }
+
+    public function show(Request $request): ResponseInterface
+    {
+        $id = $request->getQueryParams()['id'] ?? '';
+        $page = max(1, (int) ($request->getQueryParams()['page'] ?? 1));
+        $params = [
+            'id' => $id,
+            'bySlug' => str_contains($id, '-'),
+            'include' => 'posts,posts.user,tags',
+            'page' => [
+                'offset' => ($page - 1) * 20,
+                'limit' => 20,
+            ],
+        ];
+
+        $response = $this->api
+            ->withParentRequest($request)
+            ->withQueryParams($params)
+            ->get("/discussions/$id");
+
+        if ($response->getStatusCode() === 404) {
+            throw new RouteNotFoundException();
+        }
+
+        $apiDocument = json_decode($response->getBody()->getContents());
+
+        $getResource = function ($link) use ($apiDocument) {
+            return Arr::first($apiDocument->included ?? [], function ($value) use ($link) {
+                return $value->type === $link->type && $value->id === (string) $link->id;
+            });
+        };
+
+        $posts = [];
+
+        foreach ($apiDocument->included ?? [] as $resource) {
+            if ($resource->type === 'posts' && isset($resource->attributes->contentHtml)) {
+                $posts[] = $resource;
+            }
+        }
+        
+        usort($posts, fn ($a, $b) => ($a->attributes->number ?? 0) <=> ($b->attributes->number ?? 0));
+
+        $commentCount = (int) ($apiDocument->data->attributes->commentCount ?? 0);
+        $hasPrevPage = $page > 1;
+        $hasNextPage = $page < 1 + (int) ceil($commentCount / 20);
+
+        // Mark discussion as read for the current user when they visit (Flarum API: PATCH with lastReadPostNumber)
+        $actor = RequestUtil::getActor($request);
+        if (! $actor->isGuest()) {
+            $discussionId = $apiDocument->data->id ?? $id;
+            $lastReadPostNumber = $commentCount > 0 ? $commentCount : 1; // At least 1 so we create/update discussion_user and mark as read
+            $this->api
+                ->withParentRequest($request)
+                ->withBody([
+                    'data' => [
+                        'type' => 'discussions',
+                        'id' => (string) $discussionId,
+                        'attributes' => [
+                            'lastReadPostNumber' => $lastReadPostNumber,
+                        ],
+                    ],
+                ])
+                ->patch("/discussions/{$discussionId}");
+        }
+
+        $url = function (array $query) use ($id) {
+            $path = $this->url->to('forum')->route('custom-frontend.discussion', ['id' => $id]);
+            return $query ? $path . '?' . http_build_query($query) : $path;
+        };
+
+        $session = $request->getAttribute('session');
+        $csrfToken = $session ? $session->token() : '';
+
+        return $this->response('custom-frontend::discussions.show', [
+            'apiDocument' => $apiDocument,
+            'posts' => $posts,
+            'page' => $page,
+            'hasPrevPage' => $hasPrevPage,
+            'hasNextPage' => $hasNextPage,
+            'getResource' => $getResource,
+            'url' => $url,
+            'translator' => $this->translator,
+            'csrfToken' => $csrfToken,
+            'replyUrl' => $this->url->to('forum')->route('custom-frontend.posts.create', ['id' => $id]),
+            'locale' => $this->settings->get('default_locale', 'en'),
+        ]);
+    }
+
+    public function updateTagSubscriptions(Request $request): ResponseInterface
+    {
+        $data = $request->getParsedBody() ?? [];
+        $tagSlugs = $data['tag_slugs'] ?? $data['tag_slugs'] ?? [];
+        if (! is_array($tagSlugs)) {
+            $tagSlugs = $tagSlugs !== '' ? [trim((string) $tagSlugs)] : [];
+        } else {
+            $tagSlugs = array_values(array_filter(array_map('trim', $tagSlugs), fn ($s) => $s !== ''));
+        }
+
+        $response = $this->api
+            ->withParentRequest($request)
+            ->withBody(['slugs' => $tagSlugs])
+            ->put('/tag-subscriptions');
+
+        $indexUrl = $this->url->to('forum')->route('custom-frontend.index');
+        if ($response->getStatusCode() !== 200 && $tagSlugs !== []) {
+            if (count($tagSlugs) === 1) {
+                $indexUrl = $this->url->to('forum')->route('tag', ['slug' => $tagSlugs[0]]);
+            } else {
+                $indexUrl .= '?tag=' . implode(',', array_map('urlencode', $tagSlugs));
+            }
+        }
+
+        return new RedirectResponse($indexUrl);
+    }
+
+    public function create(Request $request): ResponseInterface
+    {
+        $session = $request->getAttribute('session');
+        $csrfToken = $session ? $session->token() : '';
+
+        $tagsForSelect = $this->getTagsForDiscussionCreate($request);
+
+        $html = $this->view->make('custom-frontend::discussions.create', [
+            'url' => $this->url,
+            'csrfToken' => $csrfToken,
+            'tagsForSelect' => $tagsForSelect,
+            'translator' => $this->translator,
+        ])->render();
+
+        return new HtmlResponse($html, 200, [
+            'Content-Type' => 'text/html; charset=utf-8',
+        ]);
+    }
+
+    public function store(Request $request): ResponseInterface
+    {
+        $validated = CreateDiscussionRequest::validate($request);
+        $actor = RequestUtil::getActor($request);
+
+        $title = $validated['title'];
+
+        if ($title === null || $title === '') {
+            $title = sprintf(
+                'Discussion by @%s at %s',
+                $actor->username,
+                Carbon::now()->format('Y-m-d H:i')
+            );
+        }
+
+        $data = [
+            'type' => 'discussions',
+            'attributes' => [
+                'title' => $title,
+                'content' => $validated['content'],
+            ],
+        ];
+
+        if (!empty($validated['tag_ids'])) {
+            $data['relationships'] = [
+                'tags' => [
+                    'data' => array_map(
+                        fn ($id) => ['type' => 'tags', 'id' => (string) $id],
+                        $validated['tag_ids']
+                    ),
+                ],
+            ];
+        }
+
+        $body = ['data' => $data];
+
+        $response = $this->api
+            ->withParentRequest($request)
+            ->withBody($body)
+            ->post('/discussions');
+
+        $bodyContents = $response->getBody()->getContents();
+        if ($response->getStatusCode() !== 201) {
+            throw new \RuntimeException('Failed to create discussion: ' . $bodyContents);
+        }
+
+        $data = json_decode($bodyContents, true);
+        $id = $data['data']['id'] ?? null;
+        if (!$id) {
+            throw new \RuntimeException('Create discussion response missing discussion id');
+        }
+
+        $discussionUrl = $this->url->to('forum')->route('custom-frontend.discussion', ['id' => $id]);
+
+        return new RedirectResponse($discussionUrl);
+    }
+
+    /**
+     * Tags the user can select when starting a discussion (canStartDiscussion).
+     * Returns primary tags first, then children, with canStartDiscussion true.
+     *
+     * @return list<array{id: string, type: string, attributes: array}>
+     */
+    protected function getTagsForDiscussionCreate(Request $request): array
+    {
+        $response = $this->api
+            ->withParentRequest($request)
+            ->get('/tags');
+
+        if ($response->getStatusCode() !== 200) {
+            return [];
+        }
+
+        $document = json_decode($response->getBody()->getContents(), true);
+        $data = $document['data'] ?? [];
+
+        $canStart = array_filter($data, function ($resource) {
+            $attrs = $resource['attributes'] ?? [];
+            return !empty($attrs['canStartDiscussion'] ?? false);
+        });
+
+        // Sort: primary first (by position), then children under their parent
+        usort($canStart, function ($a, $b) {
+            $aAttrs = $a['attributes'] ?? [];
+            $bAttrs = $b['attributes'] ?? [];
+            $aParent = $aAttrs['isChild'] ?? false;
+            $bParent = $bAttrs['isChild'] ?? false;
+            if ($aParent !== $bParent) {
+                return $aParent ? 1 : -1;
+            }
+            $aPos = $aAttrs['position'] ?? 0;
+            $bPos = $bAttrs['position'] ?? 0;
+            return ($aPos <=> $bPos) ?: (($a['id'] ?? '') <=> ($b['id'] ?? ''));
+        });
+
+        return array_values($canStart);
+    }
+
+    /**
+     * Primary tags (top-level, no parent) for the feed filter checkboxes.
+     *
+     * @return list<object{id: string, type: string, attributes: object}>
+     */
+    protected function getPrimaryTags(Request $request): array
+    {
+        $response = $this->api
+            ->withParentRequest($request)
+            ->get('/tags');
+
+        if ($response->getStatusCode() !== 200) {
+            return [];
+        }
+
+        $document = json_decode($response->getBody()->getContents(), true);
+        $data = $document['data'] ?? [];
+
+        return array_values(array_filter($data, function ($resource) {
+            $attrs = $resource['attributes'] ?? [];
+            return empty($attrs['isChild'] ?? true);
+        }));
+    }
+
+    /**
+     * Tag slugs the current user is subscribed to (from tag-subscriptions API).
+     * Returns [] if API is not available or user is guest.
+     *
+     * @return string[]
+     */
+    protected function getSubscribedTagSlugs(Request $request): array
+    {
+        $response = $this->api->withParentRequest($request)->get('/tag-subscriptions');
+
+        if ($response->getStatusCode() !== 200) {
+            return [];
+        }
+
+        $body = json_decode($response->getBody()->getContents(), true);
+
+        return is_array($body['slugs'] ?? null) ? $body['slugs'] : [];
+    }
+
+    protected function isTagSubscriptionsApiAvailable(Request $request): bool
+    {
+        $response = $this->api->withParentRequest($request)->get('/tag-subscriptions');
+
+        return $response->getStatusCode() === 200;
+    }
+
+    /**
+     * Parse /t/slug or ?tag=slug or ?tag=slug1,slug2 into array of slugs.
+     *
+     * @return string[]
+     */
+    protected function parseTagFilter(?string $tagParam): array
+    {
+        if ($tagParam === null || $tagParam === '') {
+            return [];
+        }
+
+        $slugs = array_map('trim', explode(',', $tagParam));
+
+        return array_values(array_filter($slugs, fn ($s) => $s !== ''));
+    }
+
+    /**
+     * Discussion IDs that are unread for the current user.
+     * Unread = no row in discussion_user for (user_id, discussion_id), or comment_count > last_read_post_number.
+     * For moderators and admins, discussions that have posts waiting for approval are also treated as unread.
+     * Same rule is used for tag "unread" dots in TagController::getTagIdsWithUnreadToday.
+     *
+     * @param object $apiDocument API response with data array of discussions (id, attributes->commentCount).
+     * @return string[] Unread discussion IDs as strings.
+     */
+    protected function getUnreadDiscussionIds(Request $request, $apiDocument): array
+    {
+        $actor = RequestUtil::getActor($request);
+        if ($actor->isGuest()) {
+            return [];
+        }
+
+        $data = $apiDocument->data ?? [];
+        if ($data === []) {
+            return [];
+        }
+
+        $ids = [];
+        $commentCounts = [];
+        foreach ($data as $discussion) {
+            $id = is_array($discussion) ? ($discussion['id'] ?? null) : ($discussion->id ?? null);
+            if ($id === null) {
+                continue;
+            }
+            $did = (int) $id;
+            $ids[] = $did;
+            $attrs = is_array($discussion) ? ($discussion['attributes'] ?? []) : ($discussion->attributes ?? (object) []);
+            $commentCount = is_array($attrs) ? ($attrs['commentCount'] ?? 0) : ($attrs->commentCount ?? 0);
+            $commentCounts[$did] = (int) $commentCount;
+        }
+        if ($ids === []) {
+            return [];
+        }
+
+        try {
+            $rows = $this->db->table('discussion_user')
+                ->where('user_id', $actor->id)
+                ->whereIn('discussion_id', array_unique($ids))
+                ->select('discussion_id', 'last_read_post_number')
+                ->get();
+
+            $lastRead = [];
+            foreach ($rows as $row) {
+                $lastRead[(int) $row->discussion_id] = (int) $row->last_read_post_number;
+            }
+
+            $unread = [];
+            foreach ($commentCounts as $did => $commentCount) {
+                $readUpTo = $lastRead[$did] ?? null;
+                // No row in discussion_user = never opened = always unread. Row exists = unread when comment_count > last_read_post_number.
+                $isUnread = $readUpTo === null || $commentCount > $readUpTo;
+                if ($isUnread) {
+                    $unread[] = (string) $did;
+                }
+            }
+
+            // For moderators and admins: treat discussions with posts pending approval as unread.
+            if ($this->actorCanApprovePosts($actor)) {
+                $pendingIds = $this->getDiscussionIdsWithPendingApproval($ids);
+                foreach ($pendingIds as $did) {
+                    $key = (string) $did;
+                    if (! in_array($key, $unread, true)) {
+                        $unread[] = $key;
+                    }
+                }
+            }
+
+            return $unread;
+        } catch (\Throwable $e) {
+            return [];
+        }
+    }
+
+    /**
+     * Whether the user can approve posts (moderator or admin).
+     * Uses Flarum's permission system: admin has '*', moderators typically have discussion.editPosts or discussion.approvePosts.
+     */
+    protected function actorCanApprovePosts(\Flarum\User\User $actor): bool
+    {
+        if ($actor->hasPermission('*')) {
+            return true;
+        }
+        if ($actor->hasPermission('discussion.editPosts')) {
+            return true;
+        }
+        if ($actor->hasPermission('discussion.approvePosts')) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Discussion IDs (from the given set) that have at least one post waiting for approval.
+     * Relies on flarum/approval: posts.is_approved = 0.
+     *
+     * @param int[] $discussionIds
+     * @return int[]
+     */
+    protected function getDiscussionIdsWithPendingApproval(array $discussionIds): array
+    {
+        if ($discussionIds === []) {
+            return [];
+        }
+
+        $ids = array_values(array_unique(array_map('intval', $discussionIds)));
+
+        try {
+            return $this->db->table('posts')
+                ->whereIn('discussion_id', $ids)
+                ->where('is_approved', 0)
+                ->distinct()
+                ->pluck('discussion_id')
+                ->map(fn ($id) => (int) $id)
+                ->values()
+                ->all();
+        } catch (\Throwable $e) {
+            // Column may not exist if approval extension is not installed
+            return [];
+        }
+    }
+
+    /**
+     * @return array{0: object, 1: bool, 2: int, 3: ?string} [apiDocument, apiOk, statusCode, errorDetail] errorDetail when status !== 200 (for debug).
+     */
+    protected function getApiDocument(Request $request, array $params): array
+    {
+        $response = $this->api
+            ->withParentRequest($request)
+            ->withQueryParams($params)
+            ->get('/discussions');
+
+        $statusCode = $response->getStatusCode();
+        $body = $response->getBody()->getContents();
+        $document = json_decode($body);
+        if (! $document instanceof \stdClass) {
+            $document = (object) ['data' => [], 'included' => []];
+        }
+        $ok = $statusCode === 200;
+        if (! $ok) {
+            $document->data = $document->data ?? [];
+            $document->included = $document->included ?? [];
+        }
+        if (! isset($document->data) || ! is_array($document->data)) {
+            $document->data = [];
+        }
+        if (! isset($document->included)) {
+            $document->included = [];
+        }
+
+        $errorDetail = null;
+        if (! $ok && $body !== '') {
+            $decoded = json_decode($body, true);
+            if (isset($decoded['errors'][0]['detail'])) {
+                $errorDetail = $decoded['errors'][0]['detail'];
+            } elseif (isset($decoded['errors'][0]['title'])) {
+                $errorDetail = $decoded['errors'][0]['title'];
+            } else {
+                $errorDetail = Str::limit(strip_tags($body), 500);
+            }
+        }
+
+        return [$document, $ok, $statusCode, $errorDetail];
+    }
+
+    protected function response(string $viewName, array $data = []): ResponseInterface
+    {
+        $html = $this->view->make($viewName, $data)->render();
+
+        return new HtmlResponse($html, 200, [
+            'Content-Type' => 'text/html; charset=utf-8',
+        ]);
+    }
+}

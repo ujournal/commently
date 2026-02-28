@@ -1,0 +1,14 @@
+{
+  "name": "commently-custom-frontend",
+  "private": true,
+  "scripts": {
+    "build": "npm run build:turbo",
+    "build:turbo": "esbuild src/resources/js/turbo.js --bundle --format=iife --outfile=assets/js/turbo.js"
+  },
+  "dependencies": {
+    "@hotwired/turbo": "^8.0.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.0"
+  }
+}

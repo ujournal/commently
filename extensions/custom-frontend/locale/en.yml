@@ -1,0 +1,56 @@
+commently-custom-frontend:
+  tags:
+    has_new: Has new discussions
+
+  discussions:
+    title: Discussions
+    sort_by: Sort by
+    sort_latest: Latest
+    sort_top: Most replies
+    sort_likes: Most likes
+    sort_hot: Hot
+    sort_newest: Newest
+    sort_oldest: Oldest
+    now: now
+    write: Write
+    toggle_filters: Toggle filters
+    filter_by_tag: Filter by tag
+    filter_hint: "Filter is applied for this visit. Enable the Tag Subscriptions extension to save your preferred topics."
+    no_discussions: No discussions yet.
+    reply: Reply
+    reply_with_count: "{count, plural, one {# reply} other {# replies}}"
+    react: Like
+    react_with_count: "{count, plural, one {# like} other {# likes}}"
+    menu_aria: Menu
+    discussion_number: "Discussion #{id}"
+    previous: "« Previous"
+    next: "Next »"
+
+  create:
+    title: New Discussion
+    title_label: Title
+    title_optional: "(optional)"
+    title_placeholder: 'Leave empty for "Posted by @username at date"'
+    tags_label: Tags
+    content_label: Content
+    content_required: "(required)"
+    content_placeholder: "Write your post…"
+    submit: Post Discussion
+    submitting: "Posting…"
+    back: "« Back to discussions"
+
+  show:
+    default_title: Discussion
+    reply_heading: Reply
+    reply_label: Your reply
+    reply_placeholder: "Write your reply…"
+    post_reply: Post Reply
+    previous: "« Previous"
+    next: "Next »"
+
+  layout:
+    default_title: Custom Frontend
+
+  post:
+    title: "Post #{id}"
+    custom_view: Custom post view.
