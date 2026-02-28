@@ -1,0 +1,163 @@
+.content {
+  font-size: 1rem;
+  line-height: 1.65;
+  color: #1a1a1a;
+}
+
+/* Paragraphs */
+.content p {
+  margin: 0 0 1em;
+}
+
+.content p:last-child {
+  margin-bottom: 0;
+}
+
+/* Headings */
+.content h2,
+.content h3,
+.content h4,
+.content h5,
+.content h6 {
+  margin: 1.5em 0 0.5em;
+  font-weight: 600;
+  line-height: 1.3;
+  color: #111;
+}
+
+.content h2:first-child,
+.content h3:first-child,
+.content h4:first-child,
+.content h5:first-child,
+.content h6:first-child {
+  margin-top: 0;
+}
+
+.content h2 {
+  font-size: 1.5rem;
+}
+.content h3 {
+  font-size: 1.25rem;
+}
+.content h4 {
+  font-size: 1.125rem;
+}
+.content h5 {
+  font-size: 1rem;
+}
+.content h6 {
+  font-size: 0.9375rem;
+  color: #444;
+}
+
+/* Lists */
+.content ul,
+.content ol {
+  margin: 0 0 1em;
+  padding-left: 1.5em;
+}
+
+.content li {
+  margin: 0.25em 0;
+}
+
+.content li > ul,
+.content li > ol {
+  margin: 0.25em 0 0;
+}
+
+.content ul {
+  list-style-type: disc;
+}
+.content ol {
+  list-style-type: decimal;
+}
+
+/* Blockquote */
+.content blockquote {
+  margin: 1em 0;
+  padding: 0.75em 0 0.75em 1rem;
+  border-left: 0.25rem solid #1e5bb5;
+  background-color: rgba(30, 91, 181, 0.06);
+  color: #2a4a7a;
+  font-style: italic;
+  margin-inline: -2rem;
+  padding-inline: 2rem;
+}
+
+.content blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+/* Code */
+.content code {
+  padding: 0.15em 0.35em;
+  font-family: ui-monospace, "SF Mono", Menlo, Monaco, Consolas, monospace;
+  font-size: 0.9em;
+  background: #f0f0f0;
+  border-radius: 4px;
+  color: #c7254e;
+}
+
+.content pre {
+  margin: 1em 0;
+  padding: 1rem;
+  overflow-x: auto;
+  font-family: ui-monospace, "SF Mono", Menlo, Monaco, Consolas, monospace;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  background: #1e1e1e;
+  color: #e0e0e0;
+  border-radius: 8px;
+}
+
+.content pre code {
+  padding: 0;
+  font-size: inherit;
+  background: none;
+  color: inherit;
+}
+
+/* Links */
+.content a {
+  color: #0066cc;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  pointer-events: none;
+  cursor: text;
+}
+
+.content a:hover {
+  color: #004499;
+}
+
+/* Bold & italic */
+.content strong {
+  font-weight: 600;
+}
+
+.content em {
+  font-style: italic;
+}
+
+/* Horizontal rule */
+.content hr {
+  margin: 1.5em 0;
+  border: none;
+  border-top: 1px solid #e0e0e0;
+}
+
+/* Images (keep consistent with existing) */
+/* .content img {
+  max-width: 100%;
+  height: auto;
+  vertical-align: middle;
+  border-radius: 6px;
+} */
+
+@media (max-width: 48rem) {
+  .content blockquote {
+    margin-inline: -1rem;
+    padding-inline: 1rem;
+  }
+}

@@ -1,3 +1,5 @@
+@import url(./content.css);
+
 * {
   box-sizing: border-box;
 }
@@ -228,6 +230,12 @@ a {
   padding: 1rem;
 }
 
+/* Discussion page: wider content and larger font */
+body.page-discussion #main {
+  max-width: 47.5rem;
+  font-size: 1.0625rem;
+}
+
 /* Small screens: floating header with menu + profile, no body padding */
 @media (max-width: 48rem) {
   html {
@@ -330,10 +338,6 @@ a {
   .nav-list-link {
     padding: 0 0.5rem;
   }
-
-  #main {
-    padding-top: 4.5rem;
-  }
 }
 
 .discussions-header {
@@ -380,6 +384,7 @@ a {
   margin: 0;
   font-size: 1.5rem;
   font-weight: 700;
+  line-height: 1.2;
 }
 
 .discussions-filter-btn {
@@ -926,15 +931,105 @@ a {
   color: #38342e;
 }
 
+/* Discussion page container: same card look as discussion-item, active state */
+/* .page-discussion #main {
+  padding-top: 1.5rem;
+} */
+
+.discussion-header {
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+  padding-inline: 1rem;
+}
+
+.discussion-header h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+@media (max-width: 48rem) {
+  body.page-discussion #main {
+    padding-top: 3.5rem;
+  }
+
+  .discussion-page {
+    border-radius: 0;
+    outline-offset: 0;
+  }
+}
+
+.Post.Post-first {
+  background-color: #faf9f8;
+  border-radius: 1rem;
+  margin-inline: -1rem;
+  padding: 2rem;
+  outline-offset: -1px;
+  outline: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.01);
+}
+
+.Post-first-header {
+  margin-bottom: 1.5rem;
+  font-size: 0.9375rem;
+}
+
+.Post-first-header .discussion-item-user-avatar {
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
+.Post-first-header .discussion-item-user-avatar--placeholder svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.Post h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-top: 0;
+}
+
 /* Post content: constrain images to container width; height proportional, never more than container width */
 .Post-content {
   container-type: inline-size;
+  font-size: 1.125rem;
 }
 
 .Post-content img {
-  max-width: 100%;
-  max-height: 100cqw;
+  width: calc(100% + 4rem);
+  margin-inline: -2rem;
+  /* max-width: 100%;
+  max-height: 100cqw; */
   height: auto;
   display: block;
   vertical-align: middle;
+  aspect-ratio: 4 / 3;
+  object-fit: contain;
+  object-position: center;
+  background-color: #f8f7f5;
+}
+
+.Post-content > p:last-child {
+  margin-bottom: 0;
+}
+
+@media (max-width: 48rem) {
+  .discussion-header {
+    padding-inline: 0;
+  }
+
+  .Post.Post-first {
+    border-radius: 0;
+    outline-offset: 0;
+    padding: 1rem;
+  }
+
+  .Post-content img {
+    width: calc(100% + 2rem);
+    margin-inline: -1rem;
+  }
 }

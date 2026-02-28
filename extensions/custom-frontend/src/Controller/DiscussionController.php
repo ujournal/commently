@@ -192,7 +192,7 @@ class DiscussionController
         $params = [
             'id' => $id,
             'bySlug' => str_contains($id, '-'),
-            'include' => 'posts,posts.user',
+            'include' => 'posts,posts.user,tags',
             'page' => [
                 'offset' => ($page - 1) * 20,
                 'limit' => 20,
@@ -268,6 +268,7 @@ class DiscussionController
             'translator' => $this->translator,
             'csrfToken' => $csrfToken,
             'replyUrl' => $this->url->to('forum')->route('custom-frontend.posts.create', ['id' => $id]),
+            'locale' => $this->settings->get('default_locale', 'en'),
         ]);
     }
 

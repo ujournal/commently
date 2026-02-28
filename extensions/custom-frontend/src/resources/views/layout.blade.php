@@ -8,7 +8,7 @@
     @stack('styles')
     <script src="{{ $customFrontendAsset('js/turbo.js') }}" defer></script>
 </head>
-<body data-turbo="true">
+<body class="@yield('bodyClass')" data-turbo="true">
     @if(!empty($primaryTags ?? []) || !empty($tagsFrameUrl ?? ''))
     <nav class="nav" aria-label="Navigation">
         <button type="button" class="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="tags-frame">
